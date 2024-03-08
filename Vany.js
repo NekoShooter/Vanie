@@ -294,6 +294,7 @@ class Vany {
 
         this.__v.ventana.addEventListener('transitionend',()=>{
             this.ventana?.classList.remove(this.sys.class('animacion'));
+            if(this.__funciones.cerrar) this.__funciones.cerrar();
             if(this.__cf.eliminar_al_carrar){this.eliminar();}
             else{
                 if(this.estaMinimizado){
