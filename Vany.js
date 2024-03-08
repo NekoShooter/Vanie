@@ -113,7 +113,7 @@ class Vany {
         this.__v.cabecera.style.display = 'flex';
         this.__v.cabecera.style.alignItems = 'center';}
 
-    asignarFuncion(strAccion, funcion){
+    addEventListener(strAccion, funcion){
         if(typeof(strAccion)!='string'||this.__funciones[strAccion] == undefined || typeof(funcion) != 'function') return;
         this.__funciones[strAccion] = funcion;}
 
