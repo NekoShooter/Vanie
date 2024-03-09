@@ -595,6 +595,8 @@ class Vany {
         this.__cf.dimencion.fija = undefined;
         if(this.estaConstruido) this.__reglas('add');}
 
+    desconectarseDelGestor(){ GestorVany.instancia.remover(this.LLAVE);}
+
 
     cargarURL(url){
         if(typeof(url) != 'string') return;
@@ -635,7 +637,6 @@ class GestorVany{
 
     subirPosicion(llave){
         const vanyV = this.#NODO.get(llave);
-        
         if(!vanyV || !vanyV.estaAbierto) return;
 
         const zindex = vanyV.ventana.style.zIndex;
@@ -647,6 +648,12 @@ class GestorVany{
                 nodo.ventana.style.zIndex= `${nodo.ventana.style.zIndex - 1}`;}}
 
         vanyV.ventana.style.zIndex = `${this.#ventanas_visibles}`;}
+
+    remover(llave){ this.#NODO.delete(llave);}
+    agregar(llave,objectDOM){
+        const vanyV = this.#NODO.get(llave);
+        if(vanyV) return;
+        this.#NODO.set(llave,objectDOM);}
 
     conectarseA(padre){
         if(padre) this.padre = padre;
