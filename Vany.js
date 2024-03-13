@@ -2,12 +2,14 @@ class Vany {
     constructor(sistema){
         this.__cf = {dimencion:{inicial:{w:720,h:480},minima:{w:0,h:0},fija:undefined},
                      posicion:{apertura:{x:'center',y:'center'},origen:{x:0,y:0}},
-                     cabecera:{str:undefined,justificado:undefined},padre:GestorVany.instancia.padre,
-                     eliminar_al_carrar:true, url:undefined,posIzq:undefined};
+                     cabecera:{str:undefined,justificado:undefined},
+                     padre:GestorVany.instancia.padre,
+                     hijoLienzo:undefined, url:undefined,
+                     eliminar_al_carrar:true, posIzq:undefined};
         this.eliminar();
         this.MARCO = undefined;
         this.LLAVE = GestorVany.instancia.enlazarCon(this);
-        this.__funciones = {minimizar:0,maximizar:0,cerrar:0,abrir:0};
+        this.__funciones = {minimizar:[],maximizar:[],media:[],cerrar:[],abrir:[]};
         this.sys = GestorVany.instancia.obtenerEstilo(sistema);
         if(!this.sys) this.sys = GestorVany.instancia.agregarEstilo(sistema);}
 
@@ -58,6 +60,10 @@ class Vany {
 
     set cabecera(str){this.__cf.cabecera.str = str; this.__modificarCabecera();}
     get cabecera(){return this__v?.cabecera;}
+    set titulo(str){this.insertarContenidoCabecera(`<span class="${this.sys.class('bloqueado')}">${str}</span>`);}
+    set justificadoTitulo(justificado){this.__cf.cabecera.justificado = justificado;}
+    get justificadoTitulo(){return this.__cf.cabecera.justificado;}
+    get titulo(){return this.__cf.cabecera.str;}
 
     insertarContenidoCabecera(str,justificado = 'start'){
         if(typeof(str) != 'string' || typeof(justificado) != 'string') return;
@@ -114,8 +120,9 @@ class Vany {
         this.__v.cabecera.style.alignItems = 'center';}
 
     addEventListener(strAccion, funcion){
-        if(typeof(strAccion)!='string'||this.__funciones[strAccion] == undefined || typeof(funcion) != 'function') return;
-        this.__funciones[strAccion] = funcion;}
+        if(typeof(strAccion)!='string'|| this.__funciones[strAccion] == undefined
+        || typeof(funcion) != 'function' || this.__funciones[strAccion]?.includes(funcion)) return;
+        this.__funciones[strAccion].push(funcion);}
 
     __esquinasRedondeadas(accion){
         if(this.sys.data.radioSup) this.__v.ventana.classList[accion](this.sys.class('radioSup'));
@@ -176,7 +183,10 @@ class Vany {
         const p = this.padre.getBoundingClientRect()
         return {x:p.left,y:p.top};}
 
+    verificarPosicion(){this.__validarPosicion(this);}
+
 /* █████████====================████████████████ acciones ██████████████==================██████████████ */
+    #__ejecutarFunciones(llave,condicion){this.__funciones[llave]?.forEach(funcion=>{funcion(condicion)});}
 
     __interruptorDeControles(llave,factivar = undefined,fdesactivar = undefined,fanimacion = undefined){
         if(this.__estado.cerrar) return;
@@ -184,7 +194,8 @@ class Vany {
         this.__v.ventana.classList.add(this.sys.class('animacion'));
         this.__estado[llave] = !this.__estado[llave];
 
-        if(this.__funciones[llave]) this.__funciones[llave](this.__estado[llave]);
+        //if(this.__funciones[llave]) this.__funciones[llave](this.__estado[llave]);
+        this.#__ejecutarFunciones(llave != 'media'?`${llave}imizar`:llave ,this.__estado[llave]);
         if(this.__estado[llave]){
             this.__cache[llave].dimencion = this.dimencion;
             this.__cache[llave].posicion = this.posicion;
@@ -272,7 +283,7 @@ class Vany {
 
 
     __validarPosicion(objeto){
-        if(!this.estaAbierto) return;
+        if(!this.estaAbierto || this.estaMaximizado) return;
         const d = this.dimencionPadre;
         if(objeto.posicion.y < 0) this.__posY(0);
         if(objeto.posicion.x <= this.__v.divBotones.offsetWidth - this.dimencion.w ||
@@ -283,7 +294,6 @@ class Vany {
 
     cerrar(){
         if(!this.estaAbierto) return;
-        this.__estado.cerrar = true;
 
         if(!this.estaMinimizado) GestorVany.instancia.oculta();
         
@@ -294,15 +304,19 @@ class Vany {
 
         this.__v.ventana.addEventListener('transitionend',()=>{
             this.ventana?.classList.remove(this.sys.class('animacion'));
-            if(this.__funciones.cerrar) this.__funciones.cerrar();
-            if(this.__cf.eliminar_al_carrar){this.eliminar();}
+            //if(this.__funciones.cerrar) this.__funciones.cerrar();
+            this.#__ejecutarFunciones('cerrar');
+            if(this.__cf.eliminar_al_carrar){
+                this.eliminar();}
             else{
                 if(this.estaMinimizado){
                     this.__estado.min = false;
                     this.dimencion = this.__cache.min.dimencion;
                     this.posicion = this.__cache.min.posicion;}
                 this.__v.ventana.classList.add(this.sys.class('none'));
-                this.__v.ventana.classList.remove(this.sys.class('transparente'))}});}
+                this.__v.ventana.classList.remove(this.sys.class('transparente'))}
+            
+            this.__estado.cerrar = true;});}
 
 
     media(posicion){
@@ -317,7 +331,6 @@ class Vany {
     eliminarAlCerrar(condicion){this.__cf.eliminar_al_carrar = condicion;}
 
     abrir(){
-        
         if(this.__estado.cerrar && !this.__cf.eliminar_al_carrar && this.estaConstruido){
             if(this.__funciones.abrir)this.__funciones.abrir(this.__estado.cerrar);
             if(this.__estado.max) this.ventana.classList.add(this.sys.class('full'));
@@ -337,11 +350,10 @@ class Vany {
             
             if(this.__cf.dimencion.fija)
                 this.__reglas('remove');
-            if(this.__funciones.abrir)
-                this.__funciones.abrir(!this.__estado.cerrar);
-
             GestorVany.instancia.subirPosicion(this.LLAVE);
-            GestorVany.instancia.visible();}}
+            GestorVany.instancia.visible();}
+
+        this.#__ejecutarFunciones('abrir');}
 
 /* ====================████████████████ construcion y conexiones ██████████████======================= */
     
@@ -392,7 +404,11 @@ class Vany {
         this.__v.ventana.appendChild(this.__v.lienzo);
         this.__v.ventana.classList.add(this.sys.idGlobal,this.sys.class('sombra'));
         this.dimencion = this.__cf.dimencion.fija ? this.__cf.dimencion.fija :this.__cf.dimencion.inicial;
-        if(this.__cf.url) this.__v.lienzo.innerHTML = this.__cf.url;
+
+        if(!this.#__conflictoLienzo()){
+            if(this.__cf.url) this.__v.lienzo.innerHTML = this.__cf.url;
+            if(this.__cf.hijoLienzo) this.__v.lienzo.appendChild(this.__cf.hijoLienzo);}
+
         const padre = this.__cf.padre;
         this.__cf.padre = undefined;
         this.asignarPadre(padre);}
@@ -561,10 +577,20 @@ class Vany {
     get estaMaximizado(){return this.__estado.max;}
     get estaCerrado(){return this.__estado.cerrar;}
     get estaAbierto(){return !this.__estado.cerrar && this.estaConstruido && this.padre;}
+    set opacidad(num){
+        if(typeof(num) != 'number' || !this.estaConstruido) return;
+        this.__v.ventana.style.opacity = num;}
+
+    get classList(){return this.__v.ventana.classList;}
+
+    get opacidad(){this.__v?.ventana.style.opacity;}
     static data = [[0x6568,0x6f6863],0x3a726f70,0x6f6b654e,0x2605,[0x6f6f6853,0x726574]]
 
 
-    cambiarPuntoDeRetorno(x,y){this.__cf.posicion.origen = {x:x,y:y};}
+    cambiarPuntoDeRetorno(x,y){
+        this.__cf.posicion.origen = {x:x,y:y};
+        if(this.estaMinimizado) this.posicion = this.__cf.posicion.origen;}
+    
     get pRetorno(){return this.__cf.posicion.origen;}
     set pRetorno(pos){this.cambiarPuntoDeRetorno(pos.x,pos.y);}
 
@@ -597,6 +623,10 @@ class Vany {
 
     desconectarseDelGestor(){ GestorVany.instancia.remover(this.LLAVE);}
 
+    #__conflictoLienzo(){
+        const conflicto = this.__cf.hijoLienzo && this.__cf.url;
+        if(conflicto) console.warn('El [Lienzo] solo puede contener una instruccion');
+        return conflicto;}
 
     cargarURL(url){
         if(typeof(url) != 'string') return;
@@ -607,7 +637,18 @@ class Vany {
                 this.__v.lienzo.removeChild(iframe);}}
         else{
             this.__cf.url = `<iframe style="width:100%;height:100%;"frameborder="0"src="${url}"allowfullscreen></iframe>`;
-            if(this.estaConstruido) this.__v.lienzo.innerHTML = this.__cf.data.url;}}}
+            if(this.estaConstruido && !this.#__conflictoLienzo()) this.__v.lienzo.innerHTML = this.__cf.data.url;}}
+    
+    agregarHijo(objDOM){
+        if(!objDOM) return;
+        this.__cf.hijoLienzo = objDOM;
+        if(this.estaConstruido && !this.#__conflictoLienzo()) this.__v.lienzo.appendChild(objDOM);}
+
+    removerHijo(objDOM){
+        if(objDOM !== this.__cf.hijoLienzo) return;
+        if(this.estaConstruido) this.__v.lienzo.removeChild(this.__cf.hijoLienzo);
+        this.__cf.hijoLienzo = undefined;}
+}
 
 /*████████████████████████████████████████████████████████████████████████████████████████████████████████████*/
 /*███████████████████████████████████████████████████ GESTOR █████████████████████████████████████████████████*/
@@ -698,6 +739,10 @@ class GestorVany{
                 console.error('se a producido un error al asignar el estilo'); return error;}}
         if(base && cf) this.sistemaBase = cf;
         return cf;}
+
+    ventanasForEach(funcion){
+        if(typeof(funcion) != 'function') return;
+        this.#NODO.forEach(funcion);}
 
     #__buscarEstiloPredeterminado(nombre){
         if(this.#Epredefinidos.length)
