@@ -1,0 +1,152 @@
+*{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;}
+
+html{
+    font-size: 62.5%;}
+#mac{font-family:  "Inter", Helvetica, sans-serif,Arial;}
+#windows{font-family:  "Noto Sans TC", Helvetica, sans-serif,Arial;}
+#linux{font-family:  "Ubuntu", Helvetica, sans-serif,Arial;}
+
+body{
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;}
+
+#sub-fondo, #fondo,#escritorio{
+    width: 100%;
+    height: 100%;}
+
+#sub-fondo,#fondo{
+    position: absolute;
+    object-fit: cover;
+    top:0;
+    left: 0;}
+
+#escritorio{
+    display: flex;
+    flex-direction: column;}
+
+#raiz{
+    overflow: hidden;
+    width: 100%;
+    flex-grow: 1;
+    display: grid;}
+
+.soporte-barra{
+    position: relative;
+    justify-self: center;
+    align-self: end;
+    z-index:90;
+    width: 20%;
+    min-width: 240px;
+    max-width: 300px;
+    height: 5px;}
+
+#barra{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    transform: translateY(-70px);
+    width: 100%;
+    border-radius: 10px;
+    height: 70px;
+    display: flex;
+    justify-content:space-evenly;
+    align-items: center;}
+
+#barra > button{
+    width: 60px;
+    height: 60px;
+    background-color: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 10px;}
+
+#barra > button:hover{background-color: rgba(120, 120, 120, 0.607);}
+#barra > button:active{border: 1px solid rgb(87, 107, 149);}
+#barra img{width: 90%; height: 90%; background-color: transparent;}
+
+#barra-herramientas{
+    width: 100%;
+    height: 25px;
+    display: grid;
+    place-items: center;}
+#barra-herramientas > a{
+    height: 100%;
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: azure;
+    font-size: 1.8rem;
+    text-decoration: none;}
+#barra-herramientas svg{
+    fill: azure;
+    transform: scale(.7,.7);}
+.acrilico{
+    background-color: rgba(15, 12, 19, 0.468);
+    backdrop-filter: blur(50px);}
+
+/*#region menu*/
+
+#lienzo{
+    background-color: #1f1f1fdc;
+    display:flex;justify-content:space-evenly;align-items:center;}
+#lienzo button{
+    background-color: transparent;
+    border: none;width:60px;height:60px;padding: 10px;
+    border-radius:5px;
+    color: azure;
+    background-position: center;
+    background-size:cover;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    transition-duration: .3s;}
+#lienzo button:hover{
+    background-color: rgba(240, 248, 255, 0.302);}
+
+.btn-selecionado{
+    background-color: rgba(19, 19, 19, 0.802) !important;
+    filter: grayscale(100%);}
+
+#lienzo>div{height: 100%; display: flex; justify-content: center; align-items: center;}
+#lienzo div:nth-child(1){width: 40%;}
+#lienzo div:nth-child(2){flex-grow: 1; flex-direction: column; justify-content: space-evenly;}
+#lienzo p,h1{
+    font-size: 1.4rem;
+    color: azure;
+}
+#lienzo>div:nth-child(1) div{
+    background-image: url('https://i.ibb.co/r2RFbVP/perfil-vanie-1.png');
+    background-position: center;
+    background-size: cover;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    box-shadow: 0 0 30px rgba(0,0,0,.3),inset 0 0 20px rgba(0,0,0,.4);}
+#lienzo h1::before{
+    font-size: 2rem;
+    content:'<Vanie/>';}
+#lienzo p::before{content:'Sientete libre';}
+#lienzo #claroscuro{
+    position: absolute;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    right: 15px;
+    bottom: 15px;}
+
+#lienzo>div:nth-child(2) div>button:nth-child(2){
+    background-image: url('https://cdn.icon-icons.com/icons2/643/PNG/512/mac-apple-osx-desktop-software-hardware_icon-icons.com_59289.png');}
+#lienzo>div:nth-child(2) div>button:nth-child(1){
+    background-image: url('https://cdn.icon-icons.com/icons2/643/PNG/512/windows-square-shape-brand_icon-icons.com_59257.png');}
+#lienzo>div:nth-child(2) div>button:nth-child(3){
+    background-image: url('https://cdn.icon-icons.com/icons2/2235/PNG/512/ubuntu_os_logo_icon_134675.png');}
+#lienzo>div>div{width:100%;height:20%; display: flex; justify-content: space-evenly; align-items: center; padding-inline: 10%;}
+
+/* #region global Vanie*/
+.VANIE_GLOBAL--titulo{ font-size: 1.8rem;}

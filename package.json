@@ -1,0 +1,45 @@
+{
+  "name": "vanie",
+  "version": "0.0.1",
+  "description": "Es un gestor de ventanas para el navegador que emula el comportamiento de las ventanas de un sistema operativo de toda la vida",
+  "files": [
+    "README.md",
+    "index.js",
+    "src"
+  ],
+  "scripts": {
+    "demo": "webpack --config ./Demo/webpack.config.js --mode=production && servor ./Demo index.html 8080",
+    "live-dev": "webpack --watch --config ./Demo/webpack.config.js --mode=development",
+    "live-server": "servor ./Demo index.html 8080 --reload",
+    "info": "echo \" https://github.com/NekoShooter/vanie.git#readme \" && exit 1"
+  },
+  "keywords": [
+    "draggable",
+    "window",
+    "modals",
+    "resizable",
+    "UI",
+    "ventana",
+    "re-escalable",
+    "frontend"
+  ],
+  "author": "Neko Shooter",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NekoShooter/vanie.git"
+  },
+  "bugs": {
+    "url": "https://github.com/NekoShooter/vanie/issues"
+  },
+  "homepage": "https://github.com/NekoShooter/vanie#readme",
+  "main": "index.js",
+  "license": "MIT",
+  "devDependencies": {
+    "servor": "4.0.2",
+    "webpack": "5.91.0",
+    "webpack-cli": "5.1.4"
+  },
+  "dependencies": {
+    "nauty": "1.0.0"
+  }
+}
