@@ -7,8 +7,8 @@ import { Desplazo, Dimension , Punto ,escala} from "nauty";
 export default class Vanie {
     #dimension ={inicial:new Dimension(720,480),minima:new Dimension(200,200),fija:undefined};
     #posicion = {apertura:new Punto,retorno:new Punto};
-    #cabecera = {str:undefined,justificado:undefined,nodo:undefined,titulo:{str:undefined,span:undefined,class:undefined,id:undefined}};
-    #lienzo = {nodos:[],iframe:undefined,dimension:undefined,fija:false};
+    #cabecera = {str:undefined,justificado:undefined,nodo:undefined,nodos:[],ico:{str:undefined,nodo:undefined,nodos:[]},titulo:{str:undefined,span:undefined}};
+    #lienzo = {nodos:[],iframe:undefined,dimension:undefined,fija:false,str:undefined,nodo:undefined};
     #classList = {};#id = {};#padre = globalVanie.padre;
     #opciones = {eliminar_alcerrar: true, btnAlaIzq:undefined, redimensionar: true}
     #funciones = {minimizar:[],maximizar:[],media:[],cerrar:[],abrir:[]};
@@ -35,6 +35,7 @@ export default class Vanie {
         this.#posicion.apertura.bNuevo('center','center');
         this.abrir = this.abrir.bind(this);
         this.minimizar = this.minimizar.bind(this);
+        this.maximizar = this.maximizar.bind(this);
         this.cerrar = this.cerrar.bind(this);
         this.subir = this.subir.bind(this);
         this.animarApertura = this.animarApertura.bind(this);
@@ -44,25 +45,29 @@ export default class Vanie {
         this.limpiarCabecera = this.limpiarCabecera.bind(this);
         this.verificarPosicion = this.verificarPosicion.bind(this);
         this.eliminarDimensionFija = this.eliminarDimensionFija.bind(this);
-        this.eliminarDimensionLienzo = this.eliminarDimensionLienzo.bind(this);
         this.desconectarseDelGestor = this.desconectarseDelGestor.bind(this);
         this.eliminar();
         this.#funciones = {minimizar:[],maximizar:[],media:[],cerrar:[],abrir:[]};
         this.#marco = undefined;
-        this.#css = globalVanie.obtenerEstilo(estilo);
+        this.#css = globalVanie.agregarEstilo(estilo);
+        if(!this.#css) this.#css = globalVanie.obtenerEstilo(estilo);
         this.#estilo_pre = this.#css && estilo;
-        if(!this.#css) this.#css = globalVanie.agregarEstilo(estilo);
-        this.#llave = VanieAdmin.registrarNuevaVentana(this);}
+        this.#llave = VanieAdmin.registrarNuevaVentana(this);
+        VanieAdmin.activarRegistro(this.#llave,this);}
 /**
  * Elimina la ventana creada, pero no las características almacenadas.
  */
     eliminar(){
+        if(this.estaConstruido && !this.#estado.cerrar && !this.#animar_apertura && this.esVisible && this.#llave) 
+            VanieAdmin.oculta(this);
         this.removerPadre();
         this.#estado = {min:false,max:false,cerrar:true,media:false,mediaPos:undefined};
         this.#v = undefined;
         this.#r = undefined;
         this.#cache={max:{dimension:this.#dimension.inicial, posicion: this.#posicion.apertura},
-                    media:{dimension:this.#dimension.inicial, posicion: this.#posicion.apertura}}}
+                    media:{dimension:this.#dimension.inicial, posicion: this.#posicion.apertura},
+                    origen:{dimension:undefined,posicion:undefined}}}
+
 //#region padre
 /**
  * Se desconecta del elemento **HTMLElement** padre.
@@ -117,26 +122,14 @@ export default class Vanie {
 //#region cebecera
 /**
  * Asigna o modifica el contenido interno del `div` perteneciente a la cabecera del objeto **Vanie**.
- * @param {string|HTMLElement} inner El contenido que tendrá el `div` asignado a la cabecera del objeto **Vanie**.
+ * @param {string|HTMLElement|HTMLElement[]} inner El contenido que tendrá el `div` asignado a la cabecera del objeto **Vanie**.
+ * + `string` : Incorpora el contenido del string en el innerHTML del div de la cabecera. ⚠ Su grado de prioridad es máximo, por lo que cualquier modificación a objetos relacionados con la cabecera puede no aplicarse.
+ * + `HTMLElement` : Incorpora el objeto HTMLElement como un nodo hijo a la cabecera.
+ * + `Array HTMLElement` : Incorpora cada objeto HTMLElement del Array como un nodo hijo a la cabecera.
  */
     set cabecera(inner){
-        if(typeof inner == 'string'){
-            const contenido = str.trim();
-            while (this.#v?.cabecera.firstChild) {
-                this.#v.cabecera.removeChild(this.#v.cabecera.firstChild);}
-            this.#cabecera.nodo = this.#cabecera.titulo.span = this.#cabecera.titulo.str = undefined;
-            if(contenido != '') this.#cabecera.str = contenido;
-            else this.#cabecera.str = undefined;
-            if(this.estaConstruido) this.#v.cabecera.innerHTML = contenido;}
-        else if(inner instanceof HTMLElement){
-            if(inner === this.#cabecera.nodo) return;
-            this.#cabecera.str = undefined;
-            if(this.estaConstruido){
-                this.#v.cabecera.removeChild(this.#cabecera.nodo);
-                this.#v.cabecera.appendChild(inner);}
-            this.#cabecera.nodo = inner;}
-        else return;
-        this.#cabeceraAplicarMod(this.#cabecera.str||this.#cabecera.nodo ||this.#cabecera.titulo.span);}
+        const ok = this.#innerhtml(this.#v?.cabecera,inner,this.#cabecera,()=>{this.#cabecera.titulo.span = this.#cabecera.titulo.str = undefined;});
+        this.#cabeceraAplicarMod(ok);}
 /**
  * Retorna la referencia del objeto **HTMLElement** perteneciente a la cabecera de la ventana o **undefined** en caso de no existir.
  * @returns {HTMLElement|undefined}
@@ -147,19 +140,26 @@ export default class Vanie {
  * @param {string} str El título que se establecerá en la cabecera del objeto **Vanie**, si se deja vacío `''` este se eliminará.
  */
     set titulo(str){
-        if(typeof str != 'string') return;
+        if(typeof str != 'string' || this.#cabecera.str) return;
         const TITULO = str.trim();
         if(!this.#cabecera.titulo.span && TITULO != ''){
-            this.#cabecera.titulo.span = document.createElement('span');
-            this.#cabecera.titulo.span.classList.add(...this.#css.class('bloqueado','titulo'));
+            const span = document.createElement('span');
+            span.style.overflow = 'hidden';
+            span.style.whiteSpace = 'nowrap';
+            span.style.textOverflow = 'ellipsis';
+            span.classList.add(...this.#css.class('bloqueado','titulo'));
+            span.innerText = TITULO;
+            this.#cabecera.titulo.span = span;
             if(this.estaConstruido){
-                if(this.#cabecera.nodo) this.#v.cabecera.insertBefore(this.#cabecera.titulo.span,this.#cabecera.nodo);
+                if(this.#cabecera.nodo || this.#cabecera.nodos.length) this.#v.cabecera.insertBefore(this.#cabecera.titulo.span,this.#v.cabecera.firstChild);
                 else this.#v.cabecera.appendChild(this.#cabecera.titulo.span);}}
         else if(TITULO == '') {
             if(this.estaConstruido) this.#v.cabecera.removeChild(this.#cabecera.titulo.span);
-            this.#cabecera.titulo.span = this.#cabecera.titulo.str =undefined;return;}
-        this.#cabecera.titulo.str = undefined;
+            this.#cabecera.titulo.span = this.#cabecera.titulo.str =undefined;}
+        else{
+        this.#cabecera.titulo.str = 
         this.#cabecera.titulo.span.innerText = TITULO;}
+    }
 /**
  * Modifica el justificado del `div` de la cabecera del objeto **Vanie**.
  * @param {string} str El justificado `center` | `end` | `start`
@@ -247,14 +247,14 @@ export default class Vanie {
             y = cy;}
         this.#v.ventana.style.top=`${y}px`;}
 /**
- * Retorna un objeto `Punto` que contiene la posición del objeto **Vanie**.
+ * 
  * @returns {Punto}
  */
     get posicion(){return new Punto(this.#v?.ventana);}
 /**
  * Modifica la posicion actual del objeto **Vanie**.
  * @param {Punto|{x:number|string y:number|string}} p Objeto `Punto` o `{x,y}`
- * @property {number|string} p.x - Posición en x: `number` | `'right'` | `'end'` | `'left ` | `'start'` | `'center'`.
+ * @property {number|string} p.x - Posición en x: `number` | `'right'` | `'end'` | `'left'` | `'start'` | `'center'`.
  * @property {number|string} p.y - Posición en y: `number` | `'top'` | `'end'` | `'bottom'` | `'start'` | `'center'`.
  */
     set posicion(p){if(!this.estaConstruido)return; try{this.#posX(p.x); this.#posY(p.y);}catch{return;}}
@@ -449,7 +449,7 @@ export default class Vanie {
  * @param {number} h Alto
  * @param {boolean} [fijar=false] Por defecto es `false`, pero si se cambia a `true` fijará la dimensión haciéndola inmutable.
  */
-    cambiarDimensionLienzo(w,h,fijar = false){
+    cambiarDimensionDelLienzo(w,h,fijar = false){
         const dimension = new Dimension(w,h);
         if(!dimension.esValido) return;
         this.#lienzo.dimension = dimension;
@@ -459,6 +459,20 @@ export default class Vanie {
             else this.dimension = {w:dimension.w,h:dimension.h + alto_barra};}
         this.#lienzo.fija = fijar;}
 /**
+ * Retorna un objeto `Dimension` con la dimensión del lienzo.
+ * @returns {Dimension}
+ */
+    get dLienzo(){
+        if(this.estaConstruido) return new Dimension(this.#v.lienzo);
+        return this.#lienzo.dimension;}
+/**
+ * Modifica la dimensión del lienzo que tendra objeto **Vanie**.
+ * @param {Dimension|{w:number h:number}} dim
+ * @property {number} dim.w Ancho
+ * @property {number} dim.h Alto
+ */
+    set dLienzo(dim){if(dim)this.cambiarDimensionDelLienzo(dim.w,dim.h,this.#lienzo.fija);}
+/**
  * Puede usar o no la dimensión de lienzo como una dimensión inmutable del objeto **Vanie**. 
  * > ⚠ esta función tiene un estatus de **MAXIMA** prioridad con respecto a otras funciones de cambio de dimensión.
  * @param {boolean} condicion Si es **`false`** eliminará la inmutabilidad de la dimensión, pero si es **`true`** fijará la dimensión haciéndola inmutable.
@@ -466,8 +480,12 @@ export default class Vanie {
     fijarDimensionDelLienzo(condicion){
         if(this.estaConstruido && condicion){
             const nuevaDimension = new Dimension(this.#v.lienzo);
-            this.cambiarDimensionLienzo(...nuevaDimension.data);}
-        this.#lienzo.fija = !!condicion;}
+            this.cambiarDimensionDelLienzo(...nuevaDimension.data, true);}
+        else if(this.estaConstruido && !condicion){
+            this.#lienzo.dimension = undefined;
+            if(this.#lienzo.fija) this.eliminarDimensionFija();
+            this.#lienzo.fija = false;}
+        else this.#lienzo.fija = !!condicion;}
 /**
  * Modifica la dimensión del objeto **Vanie** haciendola inmutable.
  * > ⚙ esta función tiene un estatus de prioridad alta con respecto a otras funciones de cambio de dimensión
@@ -493,20 +511,13 @@ export default class Vanie {
  * @property {number} dim.w Ancho
  * @property {number} dim.h Alto
  */
-    set dFija(dim){if(dim)this.cambiarDimensionMinima(dim.w,dim.h);}
+    set dFija(dim){if(dim)this.cambiarDimensionFija(dim.w,dim.h);}
 /**
  * Elimina la inmutabilidad del objeto **Vanie**
  */
     eliminarDimensionFija(){
         this.#dimension.fija = undefined;
         if(this.estaConstruido) this.#reglas('add');}
-/**
- * Elimina la inmutabilidad del objeto **Vanie** con respecto a su lienzo.
- */
-    eliminarDimensionLienzo(){
-        this.#lienzo.dimension = undefined;
-        if(this.#lienzo.fija) this.eliminarDimensionFija();
-        this.#lienzo.fija = false;}
 
     #recompilarDimension(css_anterior){
         if(this.#dimension.fija && !this.#lienzo.fija) return;
@@ -581,11 +592,12 @@ export default class Vanie {
         this.#v.divBotones.classList.remove(this.#css.class('bloqueado'));
         this.#animacionActiva.minimizar = true;
         this.#estado.min = !this.#estado.min;
-        this.#ejecutarFunciones('minimizar', this.#estado.min);
         if(this.#estado.min){
             const [w,h] = this.dimension.data;
             const [x,y] = this.posicion.data;
-            if(this.#llave) this.#v.ventana.style.zIndex = VanieAdmin.ventanasVisibles +1;
+            if(this.#llave) {
+                VanieAdmin.oculta(this);
+                this.#v.ventana.style.zIndex = VanieAdmin.ventanasVisibles +1;}
             const matrix = escala(.1,.1).desplazar(this.pRetorno.x - x - w/2,this.pRetorno.y-y-h/2);
             setTimeout(() => {
                 this.#v.ventana.classList.add(this.#css.class('animacion'));
@@ -604,8 +616,15 @@ export default class Vanie {
  * Si el objeto **Vanie** está visible en pantalla, lo maximiza al 100%. Si este ya se encuentra maximizado, lo devuelve a su tamaño original.
  */
     maximizar(){
-        if(!this.estaConstruido || !this.esVisible) return;
-        this.#expandir('max');}
+        if(!this.esVisible) return;
+        this.#expandir('max');
+        if(!this.estaMaximizado && this.#estado.mediaPos && this.#cache.origen.posicion){
+            this.#ejecutarFunciones('media',{lado: this.#estado.mediaPos, estado: this.#estado.media});
+            this.#posX({der:'50%',izq:0}[this.#estado.mediaPos]);
+            this.#posY(0);}
+        else if(this.#estado.mediaPos && this.#cache.origen.posicion){
+            this.#estado.media = false;
+            this.#ejecutarFunciones('media',{lado: this.#estado.mediaPos, estado: this.#estado.media});}}
 
     #reglas(llave){
         if(!this.#opciones.redimensionar) return;
@@ -620,11 +639,11 @@ export default class Vanie {
             this.#estado.mediaPos = undefined;
             llave = 'max';}
 
-        if(!data) this.#v.ventana.classList.add(this.#css.class('animacion'));
+        if(data === undefined) this.#v.ventana.classList.add(this.#css.class('animacion'));
         this.#estado[llave] = !this.#estado[llave];
 
         const accion = llave == 'max'? 'full':'media';
-        this.#ejecutarFunciones(llave != 'media'?`${llave}imizar`:llave ,this.#estado[llave]);
+        this.#ejecutarFunciones(llave != 'media'?`${llave}imizar`:llave ,llave != 'media' ? this.#estado[llave]:{lado: this.#estado.mediaPos,estado: this.#estado.media});
         if(this.#estado[llave]){
             this.#cache[llave].dimension = this.dimension;
             this.#cache[llave].posicion = this.posicion;
@@ -649,9 +668,10 @@ export default class Vanie {
             
             this.#v.ventana.classList.add(this.#css.class(accion));}
         else{
-            this.dimension = this.#cache[llave].dimension;
-            this.posicion = this.#cache[llave].posicion;
-            this.#validarPosicion(this.#cache[llave]);
+            this.dimension = this.#cache.origen.dimension??this.#cache[llave].dimension;
+            this.posicion = this.#cache.origen.posicion??this.#cache[llave].posicion;
+            
+            this.#validarPosicion(this.#cache.origen.posicion ? this.#cache.origen : this.#cache[llave]);
 
             if(llave == 'max'){
                 if(this.#estado.media) this.#v.ventana.classList.add(this.#css.class('media'));
@@ -662,25 +682,23 @@ export default class Vanie {
             this.#redondearEsquinas('add');
             this.#v.ventana.classList.remove(this.#css.class(accion));
             //#region reposicionador
-            if(e && data){
+            if(e && data?.sinAnimacion){
+                const dimension = this.#cache.origen.dimension ?? this.#cache[llave].dimension
                 const anchoP = data.dim_padre.w;
-                const media = this.#cache[llave].dimension.w/2;
+                const media = dimension.w/2;
                 let x = e.clientX - media;
 
-                if((e.clientX + media) > anchoP){
-                    x = anchoP - this.#cache[llave].dimension.w;}
+                if((e.clientX + media) > anchoP){x = anchoP - dimension.w;}
                 else if(x < 0) x = 0;
 
                 this.#posX(x); 
                 this.#posY(0);
                 data.origen = this.posicion;}
             else{
-                this.#desaparecerColision(true);
-                /*
-                this.dimension = this.#cache[llave].dimension;
-                this.posicion = this.#cache[llave].posicion;
-                this.#validarPosicion(this.#cache[llave]);*/
-            }}}
+                this.#desaparecerColision(true);}
+
+            if(!this.#estado.mediaPos && !this.#estado.max){
+                this.#cache.origen.dimension = this.#cache.origen.posicion = undefined;}}}
 //#region cerrar
 /**
  * Al accionar, `cerrar` ejecuta una de las siguientes dos acciones:
@@ -689,7 +707,7 @@ export default class Vanie {
  */
     cerrar(){
         if(!this.estaAbierto) return;
-        if(!this.estaMinimizado && this.#llave) VanieAdmin.oculta(this);
+        if(!this.estaMinimizado && this.#llave && this.#opciones.eliminar_alcerrar) VanieAdmin.oculta(this);
         this.#animacionActiva.cerrar = true;
         this.#estado.cerrar = true;
         this.#v.ventana.classList.add(...this.#css.class('animacion','transparente'));
@@ -701,12 +719,40 @@ export default class Vanie {
  * @param {string} posicion Parámetros aceptados: `'der'` = derecha, `'izq'`= izquierda.
  */
     media(posicion){
-        if(!this.esVisible || !(['der','izq'].includes(posicion))||this.#estado.mediaPos == posicion ) return;
+        const pos = {der:'50%',izq:0};
+        let arranque = false;
+
+        if(typeof posicion != 'string' || !this.esVisible || pos[posicion] == undefined || this.#dimension.fija) return;
+        if(this.#cache.origen.dimension == undefined){
+            arranque = true;
+            const asignar = (estado)=>{
+                this.#cache.origen.dimension = estado ? this.#cache[estado].dimension.copia:this.dimension;
+                this.#cache.origen.posicion = estado ? this.#cache[estado].posicion.copia:this.posicion;}
+
+            if(this.estaMaximizado){
+                if(this.#estado.mediaPos){
+                    asignar('media');}
+                else asignar('max');}
+            else if(this.estaDividido){asignar('media');}
+            else asignar();}
+
+        const lado = this.#estado.mediaPos;
+        const esDiferente = this.#estado.mediaPos != posicion;
         this.#estado.mediaPos = posicion;
-        if(this.#estado.media){
-            this.dimension = this.#cache.media.dimencion;
-            this.posicion = this.#cache.media.posicion;}
-        this.#expandir('media');}
+
+        if(esDiferente && this.#estado.media) {
+            if(this.estaMaximizado){this.#expandir('max');}
+            this.#v.ventana.classList.add(this.#css.class('animacion'));
+            this.#posX(pos[this.#estado.mediaPos]);
+            this.#posY(0);}
+
+        else {
+            if(this.estaMaximizado && this.#estado.media){
+                this.#expandir('max');
+                if(arranque) this.#estado.media = false;
+                else this.#estado.media = lado == posicion; }
+            this.#expandir('media');}
+        this.#ejecutarFunciones('media',{lado: this.#estado.mediaPos, estado: this.#estado.media});}
 // #region abrir
 /**
  * La acción `abrir` ejecuta las siguientes acciones:
@@ -717,19 +763,14 @@ export default class Vanie {
  */
     abrir(){
         if(this.#estado.cerrar && !this.#opciones.eliminar_alcerrar && this.estaConstruido){
-            if(this.#funciones.abrir)this.#funciones.abrir(this.#estado.cerrar);
-            if(this.#estado.max) this.ventana.classList.add(this.#css.class('full'));
-            else if(this.#estado.media) this.ventana.classList.add(this.#css.class('media'));
-            else{
-                this.posicion = this.#posicion.apertura;
-                this.dimension = this.#dimension.inicial;}
+            this.#ejecutarFunciones('abrir');
             this.#v.ventana.classList.remove(this.#css.class('none'));
             this.#desaparecerColision(false);}
 
         this.#estado.cerrar = false;
 
         if(this.#estado.min){ this.minimizar(); return;}
-        //if(this.#estado.max || this.#estado.media) return;
+
         if(!this.estaConstruido){
             this.#reConstruir();
             this.#accionadores();
@@ -737,8 +778,8 @@ export default class Vanie {
             
             if(this.#dimension.fija) this.#reglas('remove');
             if(this.#llave){
-                VanieAdmin.subirPosicion(this.#llave);
-                VanieAdmin.visible(this);}
+                VanieAdmin.visible(this);
+                VanieAdmin.subirPosicion(this.#llave);}
             if(this.#padre && this.#animar_apertura){
                 setTimeout(()=>{
                     this.#v.ventana.classList.remove(this.#css.class('transparente'));
@@ -758,6 +799,7 @@ export default class Vanie {
                 this.#v.ventana.classList.remove(this.#css.class('animacion'));
 
                 if(this.#animacionActiva.minimizar){
+                    this.#ejecutarFunciones('minimizar', this.#estado.min);
                     this.#animacionActiva.minimizar = false;
                     this.#v.ventana.classList.remove(this.#css.class('transparente'));
                     if(this.#estado.min){
@@ -771,13 +813,13 @@ export default class Vanie {
                     if(this.#animacionActiva.cerrar){
                         this.#animacionActiva.cerrar=false;
                         this.#desaparecerColision(true);
-                        this.#ejecutarFunciones('cerrar',this.#estado.cerrar);
                         if(this.#opciones.eliminar_alcerrar){
                             this.eliminar();}
                         else{
                             if(this.estaMinimizado){this.#estado.min = false;}
                             this.#v.ventana.classList.add(this.#css.class('none'));
-                            this.#v.ventana.classList.remove(this.#css.class('transparente'));}}
+                            this.#v.ventana.classList.remove(this.#css.class('transparente'));}
+                        this.#ejecutarFunciones('cerrar',this.#estado.cerrar);}
                     else this.#animacionActiva.abrir=false;}});}
 
 //#region reconstruir
@@ -810,10 +852,8 @@ export default class Vanie {
         this.#v.ventana.classList.add(this.#css.idGlobal,this.#css.class('sombra'));
         this.#recompilarDimension();
         this.dimension = this.#dimension.fija ? this.#dimension.fija :this.#dimension.inicial;
-    
-        if(!this.#errorLienzo()){
-            if(this.#lienzo.iframe) this.#v.lienzo.appendChild(this.#lienzo.iframe);
-            if(this.#lienzo.nodos.length) this.#lienzo.nodos.forEach(nodo=>this.#v.lienzo.appendChild(nodo));}
+
+        this.#asignarContenido(this.#v.lienzo,this.#lienzo);
 
         const padre = this.#padre;
         this.#padre = undefined;
@@ -833,6 +873,11 @@ export default class Vanie {
             this.#v.barra.appendChild(this.#v.divBotones);}}
 
 // #region estilos
+/**
+ * retorna el nombre del estilo que se encuentra usado la ventana.
+ * @returns {string}
+ */
+get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
 /**
  * Cambia el estilo del objeto **Vanie** y lo fija.
  * + **String** El nombre del estilo almacenado en el sistema global.
@@ -925,14 +970,18 @@ export default class Vanie {
             this.#v[btn].innerHTML = this.#css.div[btn]['contenido']});
             
         this.#reacomodar();
-        const modificarCabecera = this.#cabecera.str || this.#cabecera.titulo.span || this.#cabecera.nodo;
+
+        const modificarCabecera = this.#cabecera.str || this.#cabecera.titulo.span || this.#cabecera.nodo || this.#cabecera.nodos.length;
         const nodos = this.#v.cabecera.childNodes.length;
         if(nodos || modificarCabecera){
             this.#v.cabecera.style.padding = '';
             if(this.#cabecera.str){this.#v.cabecera.innerHTML = this.#cabecera.str;}
-            else{
+            else {
                 if(this.#cabecera.titulo.span)this.#v.cabecera.appendChild(this.#cabecera.titulo.span);
-                if(this.#cabecera.nodo)this.#v.cabecera.appendChild(this.#cabecera.nodo);}}
+                this.#asignarContenido(this.#v.cabecera,this.#cabecera);}}
+
+        this.#asignarContenido(this.#v.ico,this.#cabecera.ico);
+
         this.#cabeceraAplicarMod(modificarCabecera);}
 
 // #region accionadores
@@ -940,6 +989,7 @@ export default class Vanie {
         if(!this.estaConstruido) return;
         const pul = {}; const limite = {}
         const f = (e)=>{
+            pul['sinAnimacion'] = true;
             pul["padre"] = this.posicionPadre;pul['valido']={x:true, y:true};
             pul['x']=e.clientX;pul["origen"]=this.posicion;
             pul['y']=e.clientY;pul["dimension"]=this.dimension;
@@ -958,6 +1008,7 @@ export default class Vanie {
             if(!(0x0c & orden)){
                 if(this.#estado.max) this.#expandir('max',e,pul);
                 if(this.#estado.media) this.#expandir('media',e,pul);
+
                 if(!this.#dimension.fija){
                     this.#maperaLimites(e,pul,limite);
                     this.#ampliadorDeMarco({x:e.clientX, y:e.clientY},limite);}}
@@ -967,9 +1018,11 @@ export default class Vanie {
                 pul.valido.y = pul.dimension.h+y > this.#dimension.minima.h;
 
                 if(this.#estado.media){
-                    this.#cache.media.dimencion = this.dimension;
+                    this.#cache.origen.dimension = this.#cache.origen.posicion = undefined;
+                    const dimencion = this.dimension 
                     this.#cache.media.posicion = this.posicion;
-                    this.#expandir('media',e);}}
+                    this.#expandir('media',e,'no animar');
+                    this.dimension = dimencion;}}
 
             if(0x01 & orden && pul.valido.y) desplazo.dy = -y;
             if(0x02 & orden && pul.valido.x) desplazo.dx = -x;
@@ -1005,7 +1058,12 @@ export default class Vanie {
         this.#registro.fnMov = this.#registro.fnMov.bind(this);
         this.#registro.fnUp = this.#registro.fnUp.bind(this);
         
-        this.#v.barra.addEventListener('dblclick',()=>this.maximizar());
+        this.#v.barra.addEventListener('dblclick',(e)=>{
+            const validos = this.#css.class('controles','cabecera','ico','barra');
+            for(const clase of e.target.classList){
+                if(validos.includes(clase)){
+                    this.maximizar();
+                    return;}}});
         
         this.#v.ventana.addEventListener('click',(e)=>{
             if(this.#v.minimizar === e.target) this.minimizar();
@@ -1020,11 +1078,12 @@ export default class Vanie {
             else if (e.target !== this.#v.lienzo)
                 for(const obj in this.#r){
                     if(this.#r[obj].div === e.target){
-                        this.#transformacion.dim = orden = this.#r[obj].val;
+                        orden = this.#r[obj].val;
+                        this.#transformacion.dim = !this.#dimension.fija && !!orden;
                         break;}}
             if(e.target === this.#v.lienzo){this.subir();}
-
-            if(orden){ 
+//#region orden
+            if(orden){
                 f(e);
                 VanieAdmin.mousemove = this.#registro.fnMov;
                 VanieAdmin.mouseup = this.#registro.fnUp;}});}
@@ -1053,7 +1112,7 @@ export default class Vanie {
         
         for(const dir in limite){if(limite[dir]) validar = true;}
 
-        if(validar) this.#marco.classList.add(this.#css.class('animacion'));
+        if(validar) this.#marco.classList.add(globalVanie.globalClass('animacion'));
         else limite[this.#estado.mediaPos] = true;
         
         const margen = 10;
@@ -1085,11 +1144,53 @@ export default class Vanie {
             this.#marco.classList.add(...this.#css.class('sombra','marco'));}}  
 
 //#region configuradores
+    #innerhtml(elemento,inner,almacen,fnAsig){
+        if(inner == undefined) return;
+        while(elemento?.firstChild) elemento.removeChild(elemento.firstChild);
+
+        almacen.nodo = almacen.str = undefined;
+        almacen.nodos = [];
+
+        const html = (nuevoNodo)=>{
+            if(!(nuevoNodo instanceof HTMLElement) || nuevoNodo === almacen.nodo || almacen.nodos.includes(nuevoNodo)) return undefined;
+            elemento?.appendChild(nuevoNodo);
+            return nuevoNodo;}
+
+        if(typeof inner == 'string'){
+            const contenido = inner.trim();
+            if(fnAsig) fnAsig();
+            if(contenido != '') almacen.str = contenido;
+            if(this.estaConstruido) elemento.innerHTML = contenido;}
+        else if(inner instanceof Array){
+            let validos = 0;
+            for(let i = 0;i<inner.length; ++i){
+                const nodo = html(inner[i]);
+                if(!nodo) continue; 
+                ++validos;
+                almacen.nodos.push(nodo);}
+            return !!validos;}
+
+        else{
+            const nodo = html(inner);
+            if(nodo) almacen.nodo = nodo;
+            else return false;}
+        return true;}
+
+    #asignarContenido(elemento,almacen){
+            if(almacen.str) elemento.innerHTML = almacen.str;
+            else if(almacen.iframe) elemento.appendChild(almacen.iframe);
+            else if(almacen.nodo && !almacen.nodos.length) elemento.appendChild(almacen.nodo);
+            else if(almacen.nodos.length) almacen.nodos.forEach(nodo=>elemento.appendChild(nodo));}
 /**
  * Modifica el contenido del `div` perteneciente al icono representativo del objeto **Vanie**.
- * @param {string} innerHTML 
+ * @param {string|HTMLElement|HTMLElement[]} innerHTML El contenido que tendrá el `div` asignado al ico del objeto **Vanie**.
+ * + `string` : Incorpora el contenido del string en el innerHTML del div del icono.
+ * + `HTMLElement` : Incorpora el objeto HTMLElement como un nodo hijo del ico.
+ * + `Array HTMLElement` : Incorpora cada objeto HTMLElement del Array como un nodo hijo del ico.
  */
-    set ico(innerHTML){if(this.estaConstruido){this.#v.ico.innerHTML = innerHTML; this.actualizar();}}
+    set ico(innerHTML){
+        const ok = this.#innerhtml(this.#v?.ico,innerHTML,this.#cabecera.ico);
+        this.#cabeceraAplicarMod(ok);}
 /**
  * Retorna la referencia `div` perteneciente al icono representativo del objeto **Vanie** si se encuentra construido, de lo contrario retornará `undefined`.
  * @returns {HTMLElement|undefined}
@@ -1244,6 +1345,16 @@ export default class Vanie {
  * @returns {HTMLElement|undefined}
  */
     get lienzo(){return this.#v?.lienzo;}
+/**
+ * Modifica el contenido del `div` perteneciente al lienzo representativo del objeto **Vanie**.
+ * @param {string|HTMLElement|HTMLElement[]} inner El contenido que tendrá el `div` asignado al lienzo del objeto **Vanie**.
+ * + `string` : Incorpora el contenido del string en el innerHTML del div del lienzo. ⚠ Su grado de prioridad es máximo, por lo que cualquier modificación a objetos relacionados con el lienzo puede no aplicarse.
+ * + `HTMLElement` : Incorpora el objeto HTMLElement como un nodo hijo del lienzo.
+ * + `Array HTMLElement` : Incorpora cada objeto HTMLElement del Array como un nodo hijo del lienzo.
+ */
+    set lienzo(inner){
+        this.#innerhtml(this.#v?.lienzo,inner,this.#lienzo);
+        if(inner == '') this.#lienzo.iframe = undefined;}
 
     #errorLienzo(){
         const conflicto = this.#lienzo.nodos.length && this.#lienzo.iframe;
@@ -1255,12 +1366,10 @@ export default class Vanie {
  */
     cargarURL(url){
         if(typeof(url) != 'string') return;
-        if(url == ''){ 
-            this.#lienzo.iframe = undefined;
-            if(this.estaAbierto){
-                const iframe = this.#v.lienzo.querySelector('iframe');
-                this.#v.lienzo.removeChild(iframe);}}
+        
+        if(url == ''){this.lienzo = '';}
         else if (!this.#lienzo.iframe){
+            this.lienzo = '';
             const iframe = document.createElement('iframe');
             iframe.setAttribute('src', url);
             iframe.setAttribute('frameborder', 0);
@@ -1281,14 +1390,16 @@ export default class Vanie {
  * @param {boolean} boleano `true`: bloquea el \<iframe\>, `false`: desbloquea el \<iframe\>
  */
     bloquearIframe(boleano){
+        if(!this.estaConstruido) return;
         this.#lienzo.iframe?.classList[boleano?'add':'remove'](this.#css.class('bloqueado'));}
 /**
  * Agrega los elementos `HTMLElement` como hijos del lienzo.
  * @param  {...HTMLElement} args Nodos hijos del lienzo.
  */
     lienzoAgrega(...args){
+        if(!this.#lienzo.nodos.length) this.lienzo = '';
         for(let i = 0; i < args.length; ++i){
-            if(!(args[i] instanceof HTMLElement)) continue;
+            if(!(args[i] instanceof HTMLElement) || this.#lienzo.nodos.includes(args[i])) continue;
             this.#lienzo.nodos.push(args[i]);
             if(this.estaConstruido && !this.#errorLienzo())
                 this.#v.lienzo.appendChild(args[i]);}}
@@ -1362,4 +1473,5 @@ export default class Vanie {
  * Retorna `true` si el objeto **Vanie** se esta redimencionando `false` si no es así.
  * @returns {boolean}
  */
-    get seRedimensiona(){return !!this.#transformacion.dim;}}
+    get seRedimensiona(){return !!this.#transformacion.dim;}
+}

@@ -71,7 +71,6 @@ function main(){
         div.appendChild(div_btn);
         
         btn_claroscuro.setAttribute('id','claroscuro');
-        btn_claroscuro.setAttribute('alt','vanie personaje');
         btn_claroscuro.style.backgroundImage = `url("https://cdn.icon-icons.com/icons2/2171/PNG/512/spring_sun_light_sunlight_weather_summer_sunny_icon_133280.png")`;
 
         const btn={}
@@ -139,18 +138,18 @@ function main(){
 
     menu.animarApertura(false);
     menu.addEventListener('cerrar',menu.animarApertura);
-    menu.cambiarDimensionLienzo(500,300,true);  
+    menu.cambiarDimensionDelLienzo(500,300,true);  
     contenidoMenu(menu);
     menu.abrir();
 
     vs_code.cargarURL('https://github1s.com/NekoShooter/Vanie/blob/master/Vany.js');
-    vs_code.cambiarDimensionFija('70%','80%');
+    vs_code.cambiarDimensionInicial('70%','80%');
 
-    youtube.cambiarDimensionLienzo(720,(720 * 9)/16);
+    youtube.cambiarDimensionDelLienzo(720,(720 * 9)/16);
     let id = undefined;
     let id_ant = undefined;
     function cargarNuevoVideo(){
-        const videoId = ['1Swg-aBO9eY','eSW2LVbPThw','Ljjut210k90'];
+        const videoId = ['1Swg-aBO9eY','eSW2LVbPThw','Ljjut210k90','O-gr-22V0r0','19y8YTbvri8'];
         while(true){
             const ranId = Math.floor(Math.random()* videoId.length);
             if(ranId != id && id_ant != ranId){
@@ -167,7 +166,8 @@ function main(){
     btn_firefox.addEventListener('click',firefox.abrir);
     btn_vsCode.addEventListener('click',vs_code.abrir);
     btn_youtube.addEventListener('click',youtube.abrir);
-    window.addEventListener('resize',cambiarPuntoDeRetorno);}
+    //window.addEventListener('resize',cambiarPuntoDeRetorno);
+}
 
 
 

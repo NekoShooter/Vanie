@@ -81,7 +81,7 @@ export default class CompiladorCssVanie{
         const divBtn = `${Div(9)}>div`;
         const marco = `#${this.idMarco}`;
 
-        const d = 6; const m = parseInt(d/2 + .5);
+        const d = 8; const m = parseInt(d/2 + .5);
 
         const apo = (rta)=>{
             const q = 0x7f;
@@ -114,7 +114,7 @@ export default class CompiladorCssVanie{
             return `${c.join('')}}`;}
         
 
-        const u = `${apo(CompiladorCssVanie.info)}${global}{will-change:transform,opacity;position:absolute;display:flex;flex-direction:column;overflow:hidden;}${marco},${Div('-n+8')}{position:absolute;display:inline-block;}${Div(9)}>div{height:100% !important;}${Div(10)},${Div(9)}>div:nth-child(2){flex-grow:1;overflow:hidden;}${Div('n+8')}{width:100%;}${Div('n+5')}:nth-child(-n+8){width:${d}px;height:${d}px;}${Div(9)}{display:flex;}${efc('bloqueado','user-select:none;-webkit-user-select:none;-moz-user-select:none;',`,${marco},${global},${divBtn}`)}${efc('sombra','box-shadow: 0 0 10px rgba(0,0,0,0.3),0 0 .7px 0 rgba(0,0,0);')}${efc('controles','display:grid;grid-template-columns:1fr 1fr 1fr;place-items:center;')}${efc('controles','height:100%;display:grid;place-content:center;','>div')}${efc('animacion','transition:all .3s ease;')}${efc('none','display:none;')}${efc('radioSup','border-radius:8px 8px 0 0;')}${efc('bloqueado','pointer-events:none;')}${efc('full','width:100% !important;height:100% !important;')}${efc('transparente','opacity:0;')}${efc('media','width:50% !important;height:100% !important;')}${efc('radio','border-radius:8px;')}${efc('desaparecer','visibility:hidden;')}${css(1,'n 0 d - - c m')}${css(2,'n - d 0 - c m')}${css(3,'w m 0 - - m c')}${css(4,'w d - - 0 m c')}${css(5,'ne 0 0')}${css(6,'se 0 - - 0')}${css(7,'se - 0 0')}${css(8,'ne - - 0 0')}`;
+        const u = `${apo(CompiladorCssVanie.info)}${global}{will-change:transform,opacity;position:absolute;display:flex;flex-direction:column;overflow:hidden;}${marco},${Div('-n+8')}{position:absolute;display:inline-block;z-index:100;}${Div(9)}>div{height:100% !important;}${Div(10)},${Div(9)}>div:nth-child(2){flex-grow:1;overflow:hidden;}${Div('n+8')}{width:100%;}${Div('n+5')}:nth-child(-n+8){width:${d}px;height:${d}px;}${Div(9)}{display:flex;}${efc('bloqueado','user-select:none;-webkit-user-select:none;-moz-user-select:none;',`,${marco},${global},${divBtn}`)}${efc('sombra','box-shadow: 0 0 10px rgba(0,0,0,0.3),0 0 .7px 0 rgba(0,0,0);')}${efc('controles','display:grid;grid-template-columns:1fr 1fr 1fr;place-items:center;')}${efc('controles','height:100%;display:grid;place-content:center;','>div')}${efc('animacion','transition:all .3s ease;')}${efc('none','display:none;')}${efc('radioSup','border-radius:8px 8px 0 0;')}${efc('bloqueado','pointer-events:none;')}${efc('full','width:100% !important;height:100% !important;')}${efc('transparente','opacity:0;')}${efc('media','width:50% !important;height:100% !important;')}${efc('radio','border-radius:8px;')}${efc('desaparecer','visibility:hidden;')}${css(1,'n 0 d - - c m')}${css(2,'n - d 0 - c m')}${css(3,'w m 0 - - m c')}${css(4,'w d - - 0 m c')}${css(5,'ne 0 0')}${css(6,'se 0 - - 0')}${css(7,'se - 0 0')}${css(8,'ne - - 0 0')}`;
         estilo.appendChild(document.createTextNode(u));}
 
     static get predeterminados(){return ['windows-claro','windows-oscuro','linux-claro','linux-oscuro','mac-claro','mac-oscuro']}
@@ -230,9 +230,9 @@ export default class CompiladorCssVanie{
                     cf.botones.css['estilo'] = !cf.botones.css['estilo'] ? sty : cf.botones.css['estilo'] + sty;
 
                     if(typeof(btn['espacio']) == 'number' && typeof(btn['w'])) {
-                        ventanaEstilos.push(`.${div_botones[0]}{width:${width + espacio*2}px;}
-                        .${div_botones[1]}{width:${width*2 + espacio*3}px;row-gap:${espacio}px;}
-                        .${div_botones[2]}{width:${width*3 + espacio*4}px;row-gap:${espacio}px;}`);}
+                        ventanaEstilos.push(`.${div_botones[0]}{width:${width + espacio*2}px;min-width:${width + espacio*2}px;}
+                        .${div_botones[1]}{width:${width*2 + espacio*3}px;min-width:${width*2 + espacio*3}px;row-gap:${espacio}px;}
+                        .${div_botones[2]}{width:${width*3 + espacio*4}px;min-width:${width*3 + espacio*4}px;row-gap:${espacio}px;}`);}
                 
                 for(const llave of [...this.LISTA_DIV,'marco', 'botones']) {
                     lector(cf[llave]);}}

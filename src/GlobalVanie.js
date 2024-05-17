@@ -33,14 +33,17 @@ class AdministradorVanie{
     estaEnElLimite(){return !!this.trueColision.size;}
     registrarColision(llave,obj){this.trueColision.set(llave,obj); }
     eliminarRegistroColision(llave){this.trueColision.delete(llave);}
+    eliminarLimites(){this.#limites = undefined;}
 
     subirPosicion(llave){
         const vanieNodo = this.nodos.get(llave);
+        
         if(!vanieNodo || !vanieNodo.estaAbierto) return;
 
         const zindex = vanieNodo.ventana.style.zIndex;
-         
+        console.log(this.#ventanas_visibles);
         if(zindex >= this.#ventanas_visibles) return;
+        
         for(const nodo of this.nodos.values()){
             nodo.bloquearIframe(true);
             if(nodo.ventana?.style.zIndex > zindex){
@@ -54,8 +57,11 @@ class AdministradorVanie{
         const llave = 'Vanie'+ ++this.#registros;
         this.nodos.set(llave,vanie);
         this.subirPosicion(llave);
-        this.#iter('registro',vanie);
         return llave;}
+
+    activarRegistro(llave,vanie){
+        if(!llave) return;
+        this.#iter('registro',vanie);}
 
     removerVentana(llave){
         const vanieNodo = this.nodos.get(llave);
@@ -94,6 +100,9 @@ class AdministradorVanie{
         let colision = 0;
         for(const [clave,valor] of this.trueColision){if(clave != llave) colision |= valor;}
         return{der:der,izq:izq,sup:sup,inf:inf,ref:colision}}
+
+    get objLimites(){return this.#limites;}
+
     intColision(der,izq,sup,inf){ return der|izq<<1|sup<<2|inf<<3;}
 
     eventos(evento,fn){
@@ -191,7 +200,7 @@ class GestorVanie{
  * Retorna el nombre del estilo principal o `undefined` si no está establecido.
  * @returns {string|undefined}
  */
-    get estiloBase(){return this.#sistemaBase;}
+    get estiloBase(){return this.#sistemaBase?.data.nombre;}
 /**
  * Retorna `true` si existe un estilo principal o `false` si no existe.
  * @returns {boolean}
@@ -203,23 +212,32 @@ class GestorVanie{
  */
     get hayEstilos(){return this.#Epredefinidos.length && this.#Epersonalizados.length && this.#sistemaBase;}
 /**
+ * Retorna el numero de instancias Vanie registradas.
+ * @returns {number}
+ */
+    get registros(){return VanieAdmin.nodos.size;}
+/**
  * Establece los límites que determinarán las colisiones de los objetos **Vanie** en pantalla.
  * @param {{der:undefined|number|string izq:undefined|number|string sup:undefined|number|string inf:undefined|number|string}} o Objeto con las siguientes características:
  * @example
  * {   
- *   der : undefined | number | string = 'right' 'start' '0%...100%' '100%-1' '100%+1',
- *   izq : undefined | number | string = 'left' 'end' '0%...100%' '100%-1' '100%+1',
+ *   der : undefined | number | string = 'right' 'end' '0%...100%' '100%-1' '100%+1',
+ *   izq : undefined | number | string = 'left' 'start' '0%...100%' '100%-1' '100%+1',
  *   sup : undefined | number | string = 'top' 'start' '0%...100%' '100%-1' '100%+1',   
  *   inf : undefined | number | string = 'bottom' 'end' '0%...100%' '100%-1' '100%+1',
  * }
  */
     set limites(o){
-        try{ this.#establecerLimites(o.der,o.izq,o.sup,o.inf);}catch(err){
+        if(o == undefined || o == 0 || o == ''){
+                VanieAdmin.eliminarLimites();
+                return;}
+        try{ 
+            this.#establecerLimites(o.der,o.izq,o.sup,o.inf);}catch(err){
             console.error('--OBJETO INVALIDO--');
             console.info(`Caracteristicas que debe contener un objeto valido:
             { 
-                der : undefined | number | string = 'right' | 'start'| '0%' '100%' '100%-1' '100%+1',
-                izq : undefined | number | string = 'left' | 'end' | '0%' '100%' '100%-1' '100%+1',
+                der : undefined | number | string = 'right' | 'end' | '0%' '100%' '100%-1' '100%+1',
+                izq : undefined | number | string = 'left' | 'start' | '0%' '100%' '100%-1' '100%+1',
                 sup : undefined | number | string = 'top' | 'start' | '0%' '100%' '100%-1' '100%+1',   
                 inf : undefined | number | string = 'bottom' | 'end' | '0%' '100%' '100%-1' '100%+1',)
             } `);
@@ -231,6 +249,11 @@ class GestorVanie{
         const d = typeof der == 'string'?der.trim():der;
         const iz =  typeof izq == 'string'?izq.trim():izq;
         VanieAdmin.asignarLimites(d,iz,s,i);}
+/**
+ * Si se ha hecho una asignación correcta, retornará los límites que determinarán las colisiones de los objetos **Vanie** en pantalla, de lo contrario devolverá `undefined`.
+ * @returns {{der:undefined|number|string izq:undefined|number|string sup:undefined|number|string inf:undefined|number|string} | undefined}
+ */        
+    get limites(){return VanieAdmin.objLimites;}
  /**
   * Toma un CompiladorCssVanie para comprobar si es el estilo principal.
   * @param {CompiladorCssVanie} estilo 
@@ -277,7 +300,7 @@ class GestorVanie{
     ventanasForEach(funcion){VanieAdmin.nodos.forEach(funcion);}
 /**
  * Otorga el nombre o la lista de nombres de la clase global a partir de un alias para su uso en los elementos del DOM.
- * @param {string} alias El alias de la clase global que ejecutara las siguientes órdenes en CSS:  
+ * @param {...string} alias El alias de la clase global que ejecutara las siguientes órdenes en CSS:  
  * + `titulo` : CSS personalizable, si no ha cambiado la id global podrá usarla como: **'VANIE_GLOBAL--titulo'** caso contrario, asigne el nombre que uso como id global `${idglobal}--titulo`.
  * + `animacion` : transition : **all .3s ease**;
  * + `none` : display : **none**;
@@ -290,7 +313,7 @@ class GestorVanie{
  * + `radioSup` : border-radius : **8px 8px 0 0**;
  * @returns {string|string[]}
  */
-    globalClass(alias){return this.#sistemaBase?.globalClass(alias);}
+    globalClass(...alias){return this.#sistemaBase?.globalClass(...alias);}
 /**
  * Detecta los eventos relacionados al objeto **Vanie**.
  * @param {string} evento el Nombre del evento:
