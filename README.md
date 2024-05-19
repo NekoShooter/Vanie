@@ -20,11 +20,12 @@ npm i vanie
 + [Coordenadas y posición.](#coordenadas-y-posición)
 + [Dimensión.](#dimensión)
 + [Botones y Eventos.](#botones-y-eventos)
++ [Gestos.](#gestos)
 + [Modificar estilos.](#modificar-estilos)
 + [Configuraciones.](#configuraciones)
 + [Validadores.](#validadores)
 + [globalVenie.](#globalvenie)
-+ [recomendaciones finales](#recomendaciones-finales)
++ [Recomendaciones finales.](#recomendaciones-finales)
 ---
 ### Demo
 
@@ -164,6 +165,7 @@ ventana3.abrir();
  ```
 
 **get** -  _**cabecera**_ Si se ha construido satisfactoriamente la instancia Vanie retornara el `HTMLElement` que pertenece a la cabecera de la ventana de lo contrario retornara `undefined`.  
+
 **set** -  _**cabecera**_ Acepta tres tipos de parámetros:
 + `string` : Incorpora el contenido del string en el innerHTML del div de la cabecera. ⚠ Su grado de prioridad es máximo, por lo que cualquier modificación a objetos relacionados con la cabecera puede no aplicarse.
 + `HTMLElement` : Incorpora el objeto HTMLElement como un nodo hijo a la cabecera.
@@ -268,6 +270,7 @@ ventana1.abrir();
 ventana2.abrir();
 ```
 **get** -  _**ico**_ Si se ha construido satisfactoriamente la instancia Vanie retornara el `HTMLElement` que pertenece al ico de la ventana de lo contrario retornara `undefined`.  
+
 **set** -  _**ico**_ Acepta tres tipos de parámetros:
 + `string` : Incorpora el contenido del string en el innerHTML del div ico.
 + `HTMLElement` : Incorpora el objeto HTMLElement como un nodo hijo del ico.
@@ -328,6 +331,7 @@ console.log(ventana1.lienzo, ventana2.lienzo, ventana3.lienzo); // retorna la re
 ```
 
 **get** -  _**lienzo**_ Si se ha construido satisfactoriamente la instancia **Vanie**, retornará el `HTMLElement` que pertenece al lienzo de la ventana de lo contrario, retornará `undefined`.  
+
 **set** -  _**lienzo**_ Acepta tres tipos de parámetros:
 + `string` : Incorpora el contenido del string en el innerHTML del div lienzo. ⚠ Su grado de prioridad es máximo, por lo que cualquier modificación puede no aplicarse.
 + `HTMLElement` : Incorpora el objeto HTMLElement como un nodo hijo del lienzo.
@@ -438,13 +442,15 @@ ventana2.justificarCabecera = ventana1.justificarCabecera = 'center';
 ventana1.titulo = 'ventana 1';
 ventana2.titulo = 'ventana 2';
 
+// Agregando el sitio con un iframe
 ventana1.lienzo = `
     <iframe width="100%" height="100%" src="https://www.youtube.com/embed/GrG2-oX5z24?si=UPiNV_e5HOBdC7lE" 
     title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; 
     encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" 
-    allowfullscreen></iframe>`; // Agregando el sitio con un iframe
+    allowfullscreen></iframe>`;
 
-ventana2.cargarURL('https://www.youtube.com/embed/GrG2-oX5z24?si=UPiNV_e5HOBdC7lE'); // Carga el sitio usando solo la URL
+// Carga el sitio usando solo la URL
+ventana2.cargarURL('https://www.youtube.com/embed/GrG2-oX5z24?si=UPiNV_e5HOBdC7lE'); 
 
 ventana1.abrir();
 ventana2.abrir();
@@ -462,7 +468,8 @@ Como su nombre indica, `bloquearLienzo` y `bloquearIframe` desactivan la interac
 ventana1.bloquearLienzo(true); // Bloquea la interactividad del lienzo.
 ventana2.bloquearIframe(true); // Bloquea la interactividad del iframe creado al usar la función cargarURL.
 ```
-`bloquearLienzo(booleano)` : Si el valor del parámetro es `true`, bloqueará la interactividad del mouse en el lienzo. Si es `false`, activará los eventos en el lienzo.
+`bloquearLienzo(booleano)` : Si el valor del parámetro es `true`, bloqueará la interactividad del mouse en el lienzo. Si es `false`, activará los eventos en el lienzo.  
+
 `bloquearIframe(booleano)` : Si el valor del parámetro es `true`, bloqueará la interactividad del mouse en el iframe si se ha cargado una **URL** con la función `cargarURL` de lo contrario, no surtirá efecto. Si es `false`, activará los eventos en el **iframe**. Es importante tener en cuenta que los objetos **Vanie** poseen un bloqueador automático, por lo que esta función no tendrá un efecto tan significativo a menos que se utilice dentro de los [eventos](#botones-y-eventos) de los objetos **Vanie**.  
 
 ---
@@ -470,7 +477,7 @@ ventana2.bloquearIframe(true); // Bloquea la interactividad del iframe creado al
 
 ### Persistencia
 
-En las ventanas creadas por **Vanie**, los elementos `HTMLElement` devueltos por las propiedades relacionadas a la [estructura](#estructura) pueden ser estilizados y recibir nodos hijos mediante sus funciones miembro.  
+Las ventanas creadas con **Vanie**, los elementos `HTMLElement` devueltos por las propiedades relacionadas a la [estructura](#estructura) pueden ser estilizados y recibir nodos hijos mediante sus propias funciones miembro.  
 Sin embargo, es importante tener en cuenta dos problemas:
 1. Acceder a las funciones miembro de estos elementos antes de que la ventana se abra generará un error.
 2. **Vanie** está diseñado para optimizar el uso de recursos, por lo que asignar directamente parámetros a estas propiedades mediante sus funciones miembro puede resultar en la pérdida de estas configuraciones al [cerrar](#cerrar) la ventana.  
@@ -500,15 +507,20 @@ const iframe = `
 // Si bien esto no es lo ideal, para efectos prácticos sirve como ejemplo.
 ventana1.lienzo = iframe; // Aseguramos la persistencia del diseño
 
-ventana2.addEventListener('abrir',()=>{ // Vaya a la sección de botones y eventos para conocer más detalles de esta función.
-    ventana2.lienzo.innerHTML = iframe; // Cada vez que el objeto sea construido y mostrado, las configuraciones hechas también serán ingresadas.
-});//  Una forma de falsear la persistencia
+// Vaya a la sección de botones y eventos para conocer más detalles de esta función.
+ventana2.addEventListener('abrir',()=>{
+    // Una forma de falsear la persistencia
+    // Cada vez que el objeto sea construido y mostrado, las configuraciones hechas también serán ingresadas.
+    ventana2.lienzo.innerHTML = iframe;
+});
 
 ventana1.abrir();
 ventana2.abrir();
 ventana3.abrir();
 
-ventana3.lienzo.innerHTML = iframe; // Una vez construido, se mostrará el diseño, pero al cerrar la ventana, el elemento no conservará las configuraciones previas.
+/* Una vez construido, se mostrará el diseño, 
+pero al cerrar la ventana, el elemento no conservará las configuraciones previas.*/
+ventana3.lienzo.innerHTML = iframe; 
 
 // Reabrimos las ventanas al hacer doble clic
 document.addEventListener('dblclick',()=>{
@@ -529,7 +541,8 @@ Son un conjunto de propiedades y funciones que lo ayudaran a gestionar de una fo
 #### posicion:
 La propiedad posicion le permite tanto modificar como obtener la posición de la ventana **Vanie**.
 
-**get** - **posicion** : Retorna un objeto `Punto` que contiene la posición actual del objeto **Vanie**.
+**get** - **posicion** : Retorna un objeto `Punto` que contiene la posición actual del objeto **Vanie**.  
+
 **set** - **posicion** : Permite cambiar la posición actual del objeto **Vanie**. Puede hacerse de dos formas:
 + Mediante un objeto **Punto**
 + A través de un objeto con los parámetros **x** e **y**.
@@ -552,13 +565,17 @@ ventana1.titulo = 'ventana 1';
 
 ventana1.abrir();
 
-console.log(ventana1.posicion); // Retorna el punto donde se encuentra la ventana.
+// Retorna el punto donde se encuentra la ventana.
+console.log(ventana1.posicion); 
 
-venatan1.posicion = new Punto(0,0); // Modifica la posición de la ventana mediante un objeto Punto.
-ventana1.posicion = {x:0, y:0} // Modifica la posición de la ventana mediante un objeto con los parámetros {x,y}.
+// Modifica la posición de la ventana mediante un objeto Punto.
+venatan1.posicion = new Punto(0,0);
 
-// Modificando la posición de la ventana mediante parámetros de posicionamiento de CSS.
-// Es especialmente útil cuando se desconoce la dimensión del contenedor padre o cuando este es dinámico.
+// Modifica la posición de la ventana mediante un objeto con los parámetros {x,y}.
+ventana1.posicion = {x:0, y:0} 
+
+/* Modificando la posición de la ventana mediante parámetros de posicionamiento de CSS.
+Es especialmente útil cuando se desconoce la dimensión del contenedor padre o cuando este es dinámico.*/
 const pos = new Punto;
 pos.bNuevo('end','start');
 ventana1.posicion = pos;
@@ -587,7 +604,8 @@ ventana1.titulo = 'ventana 1';
 
 ventana1.abrir();
 
-console.log(ventana1.x, ventana1.y); // Retorna las coordenadas en X, Y.
+// Retorna las coordenadas en X, Y.
+console.log(ventana1.x, ventana1.y); 
 
 // Modifica la posición de la ventana.
 venatan1.x = 0; 
@@ -617,8 +635,9 @@ ventana1.titulo = 'ventana 1';
 
 ventana1.abrir();
 
-// Se aplica automáticamente.
-ventana1.verificarPosicion(); // No es necesario aplicarla, pero está disponible si la necesita.
+/* Se aplica automáticamente.
+No es necesario aplicarla, pero está disponible si la necesita.*/
+ventana1.verificarPosicion(); 
 ```
 #### posicionPadre:
 La propiedad `posicionPadre` retorna un objeto `Punto` con las coordenadas globales del contenedor principal.
@@ -631,7 +650,9 @@ const raiz = document.getElementById('raiz');
 const ventana1 = new Vanie('mac-oscuro');
 
 ventana1.padre = raiz;
-console.log(ventana1.posicionPadre); // Retorna un objeto Punto con las coordenadas globales del contenedor padre.
+
+// Retorna un objeto Punto con las coordenadas globales del contenedor padre.
+console.log(ventana1.posicionPadre); 
 
 ventana1.abrir();
 ```
@@ -654,12 +675,15 @@ const ventana3 = new Vanie('linux-oscuro');
 
 ventana3.padre = ventana2.padre = ventana1.padre = raiz;
 
-ventana1.cambiarPuntoDeApertura(0,0);// Cambia la posición de apertura.
-ventana2.pApertura = {x:'right',y:'bottom'};  // Utiliza un objeto {x, y} para definir la posición de apertura.
+// Cambia la posición de apertura.
+ventana1.cambiarPuntoDeApertura(0,0);
+// Utiliza un objeto {x, y} para definir la posición de apertura.
+ventana2.pApertura = {x:'right',y:'bottom'};  
 
 const posicion = new Punto;
 posicion.bNuevo('center','center');
-ventana3.pApertura = posicion;// Cambia la posición de apertura apartir de un objeto Punto.
+// Cambia la posición de apertura apartir de un objeto Punto.
+ventana3.pApertura = posicion;
 
 ventana1.abrir();
 ventana2.abrir();
@@ -690,12 +714,17 @@ const ventana3 = new Vanie('linux-oscuro');
 
 ventana3.padre = ventana2.padre = ventana1.padre = raiz;
 
-ventana1.cambiarPuntoDeRetorno(0,0);// Cambia la posición de retorno de la ventana 1.
-ventana2.pRetorno = {x:'right',y:0};  // Utiliza un objeto {x, y} para definir la posición de retorno de la ventana 2.
+// Cambia la posición de retorno de la ventana 1.
+ventana1.cambiarPuntoDeRetorno(0,0);
+
+// Utiliza un objeto {x, y} para definir la posición de retorno de la ventana 2.
+ventana2.pRetorno = {x:'right',y:0};  
 
 const posicion = new Punto;
 posicion.bNuevo(0,'bottom');
-ventana3.pRetorno = posicion;// Cambia la posición de retorno de la ventana 3 utilizando un objeto Punto.
+
+// Cambia la posición de retorno de la ventana 3 utilizando un objeto Punto.
+ventana3.pRetorno = posicion;
 
 ventana1.abrir();
 ventana2.abrir();
@@ -725,10 +754,12 @@ ventana1.lienzo.style.backgroundColor = '#00000077';
 let desplazamiento = 0;
 document.addEventListener('wheel',e=>{
     desplazamiento += e.deltaY <0? 1 : -1;
-    ventana1.desplazar(desplazamiento,desplazamiento); // Modifica el desplazamiento en los ejes x e y.
+    // Modifica el desplazamiento en los ejes x e y.
+    ventana1.desplazar(desplazamiento,desplazamiento); 
 });
 
-console.log(ventana1.desplazo); // Retorna el objeto `Desplazo` con los parámetros de desplazamiento en dx y dy
+// Retorna el objeto `Desplazo` con los parámetros de desplazamiento en dx y dy
+console.log(ventana1.desplazo); 
 ```
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2U5bWI2NTNxbnk5MWcybTRxc2dwcDcwanFiaXQyaGQ1NnB0d2tsNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/GYz05NAdwGv7oUTkLN/source.gif" alt="gif animado que muestra el resultado del codigo usado en el ejemplo de desplazar"></a></p>
 
@@ -758,11 +789,14 @@ ventana2.padre = ventana1.padre = raiz;
 ventana1.abrir();
 ventana2.abrir();
 
-ventana1.dimension = {w:'80%', h:500} // asignando la dimension a la ventana 1 usando un objeto con los parametros {w,h}.
+// asignando la dimension a la ventana 1 usando un objeto con los parametros {w,h}.
+ventana1.dimension = {w:'80%', h:500} 
 
 const dimension = new Dimension;
 dimension.bNuevo(180,'20%');
-ventana2.dimension = dimension; // asignando la dimension a la venatan 2 usando un objeto Dimension.
+
+// asignando la dimension a la venatan 2 usando un objeto Dimension.
+ventana2.dimension = dimension;
 
 ventana1.lienzo.style.backgroundColor =
 ventana2.lienzo.style.backgroundColor = '#00000077';
@@ -800,7 +834,8 @@ const ventana1 = new Vanie('mac-oscuro');
 ventana1.padre = raiz;
 ventana1.abrir();
 
-console.log(ventana1.dimensionPadre); // Retorna un objeto Dimension con las dimensiones del contenedor padre.
+// Retorna un objeto Dimension con las dimensiones del contenedor padre.
+console.log(ventana1.dimensionPadre);
 ```
 #### cambiarDimensionInicial y dApertura:
 La función `cambiarDimensionInicial` y la propiedad `dApertura` permiten establecer las dimensiones con las que se abrirá inicialmente la ventana. Se pueden especificar tanto `números` como `porcentajes`.
@@ -819,12 +854,16 @@ const ventana3 = new Vanie('linux-oscuro');
 
 ventana3.padre = ventana2.padre = ventana1.padre = raiz;
 
-ventana1.cambiarDimensionInicial(200,200);// Cambia la dimension de apertura de la ventana 1.
-ventana2.dApertura = {w:'100%',h:'20%'};  // Utiliza un objeto {w, h} para definir la dimensión de apertura de la ventana 2.
+// Cambia la dimension de apertura de la ventana 1.
+ventana1.cambiarDimensionInicial(200,200);
 
+// Utiliza un objeto {w, h} para definir la dimensión de apertura de la ventana 2.
+ventana2.dApertura = {w:'100%',h:'20%'};  
 const dimension = new Dimension;
 dimension.bNuevo(500,'100%');
-ventana3.dApertura = dimension;// Cambia la dimensión de apertura de la ventana 3 utilizando un objeto Dimension.
+
+// Cambia la dimensión de apertura de la ventana 3 utilizando un objeto Dimension.
+ventana3.dApertura = dimension;
 
 ventana1.abrir();
 ventana2.abrir();
@@ -853,10 +892,14 @@ const ventana3 = new Vanie('linux-oscuro');
 
 ventana3.padre = ventana2.padre = ventana1.padre = raiz;
 
-ventana1.cambiarDimensionMinima(200,200);// Cambia la dimension minima de la ventana 1.
-ventana2.dMinima = {w:200,h:200};  // Utiliza un objeto {w, h} para definir la dimensión minima de la ventana 2.
+// Cambia la dimension minima de la ventana 1.
+ventana1.cambiarDimensionMinima(200,200);
 
-ventana3.dMinima = new Dimension(200,200);// Cambia la dimensión minima de la ventana 3 utilizando un objeto Dimension.
+// Utiliza un objeto {w, h} para definir la dimensión minima de la ventana 2.
+ventana2.dMinima = {w:200,h:200};  
+
+// Cambia la dimensión minima de la ventana 3 utilizando un objeto 
+ventana3.dMinima = new Dimension(200,200);Dimension.
 
 ventana1.abrir();
 ventana2.abrir();
@@ -886,10 +929,14 @@ const ventana3 = new Vanie('linux-oscuro');
 
 ventana3.padre = ventana2.padre = ventana1.padre = raiz;
 
-ventana1.cambiarDimensionFija(200,200);// Establece la dimensión fija de la ventana 1.
-ventana2.dFija = {w:200,h:200};  // Utiliza un objeto {w, h} para definir la dimensión fija de la ventana 2.
+// Establece la dimensión fija de la ventana 1.
+ventana1.cambiarDimensionFija(200,200);
 
-ventana3.dFija = new Dimension(200,200);// Establece la dimensión fija de la ventana 3 utilizando un objeto Dimension.
+// Utiliza un objeto {w, h} para definir la dimensión fija de la ventana 2.
+ventana2.dFija = {w:200,h:200};
+
+// Establece la dimensión fija de la ventana 3 utilizando un objeto Dimension.
+ventana3.dFija = new Dimension(200,200);
 
 ventana1.abrir();
 ventana2.abrir();
@@ -931,10 +978,13 @@ ventana2.padre = ventana1.padre = raiz;
 ventana1.cargarURL('https://www.youtube.com/embed/GrG2-oX5z24?si=UPiNV_e5HOBdC7lE');
 ventana2.cargarURL('https://www.youtube.com/embed/GrG2-oX5z24?si=UPiNV_e5HOBdC7lE');
 
+
 const r16_9 = {w:720,h:(720 * 9)/16}; // Relación de aspecto 16:9.
 
 ventana1.dLienzo = r16_9; // Cambiando la dimensión del lienzo.
-ventana2.cambiarDimensionDelLienzo(r16_9.w, r16_9.h,true);// Cambiando la dimensión del lienzo y haciéndola inmutable.
+
+// Cambiando la dimensión del lienzo y haciéndola inmutable.
+ventana2.cambiarDimensionDelLienzo(r16_9.w, r16_9.h,true);
 
 ventana1.abrir();
 ventana2.abrir();
@@ -961,15 +1011,20 @@ ventana2.cargarURL('https://www.youtube.com/embed/GrG2-oX5z24?si=UPiNV_e5HOBdC7l
 
 const r16_9 = {w:720,h:(720 * 9)/16};
 
-ventana1.cambiarDimensionDelLienzo(r16_9.w, r16_9.h);// Cambiando la dimensión del lienzo.
-ventana2.cambiarDimensionDelLienzo(r16_9.w, r16_9.h,true);// Cambiando la dimensión del lienzo y haciéndola inmutable..
+// Cambiando la dimensión del lienzo.
+ventana1.cambiarDimensionDelLienzo(r16_9.w, r16_9.h);
 
-ventana1.fijarDimensionDelLienzo(true) // Vuelve inmutable el lienzo.
+// Cambiando la dimensión del lienzo y haciéndola inmutable..
+ventana2.cambiarDimensionDelLienzo(r16_9.w, r16_9.h,true);
+
+// Vuelve inmutable el lienzo.
+ventana1.fijarDimensionDelLienzo(true) 
 
 ventana1.abrir();
 ventana2.abrir();
 
-ventana2.fijarDimensionDelLienzo(false) // Remueve la inmutabilidad del lienzo.
+// Remueve la inmutabilidad del lienzo.
+ventana2.fijarDimensionDelLienzo(false) 
 ```
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExZDBudWNiM3JjbjZrNTU5ZnhsMjMzY2E2Y25rOHFmbHBoN214c3AwaSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/sc5Pw2ZxTpPdte2sbd/source.gif"alt="gif animado que muestra el resultado del codigo usado en el ejemplo de fijaDimensionDelLienzo"></a></p>
 
@@ -1009,7 +1064,8 @@ ventana2.padre = ventana1.padre = raiz;
 
 ventana1.cargarURL('https://www.youtube.com/embed/GrG2-oX5z24?si=UPiNV_e5HOBdC7lE');
 
-ventana1.pRetorno = { //Establece la posición de retorno al lugar donde se posiciona el botón cuando se minimiza.
+//Establece la posición de retorno al lugar donde se posiciona el botón cuando se minimiza.
+ventana1.pRetorno = { 
     x: boton.getBoundingClientRect().left + boton.offsetWidth/2,
     y: boton.getBoundingClientRect().top
 }
@@ -1051,7 +1107,8 @@ ventana1.pRetorno = {
 
 let numDeVecesAbierta = 0;
 
-ventana1.addEventListener('abrir',()=>{ // Ejecurara la funcion unicamente cuando la ventana sea construida y se muestre en pantalla.
+// Ejecurara la funcion unicamente cuando la ventana sea construida y se muestre en pantalla.
+ventana1.addEventListener('abrir',()=>{ 
     const color = { r: Math.random()*255, g: Math.random()*255, b: Math.random()*255}
 
     ventana1.lienzo.innerText = ++numDeVecesAbierta;
@@ -1121,8 +1178,9 @@ ventana1.pRetorno = {
     x: boton.getBoundingClientRect().left + boton.offsetWidth/2,
     y: boton.getBoundingClientRect().top
     }
-
-boton.addEventListener('click',ventana1.minimizar); // Si la ventana está visible, la transforma para desaparecerla de la vista del usuario; de lo contrario, la devuelve a su estado anterior.
+/* Si la ventana está visible, la transforma para desaparecerla de la vista del usuario; 
+de lo contrario, la devuelve a su estado anterior.*/
+boton.addEventListener('click',ventana1.minimizar); 
 ```
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExb2kyMXhjY3hqanBmNnY1MWZ2ajA5ZzgyN2h6dmF2OTd5cGRoNXU1OCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xTAK4Okb5KdzDyPQ0P/source.gif"alt="gif animado que muestra el resultado del codigo usado en el ejemplo de la función minimizar"></a></p>
 
@@ -1150,7 +1208,7 @@ ventana1.pRetorno = {
     }
 
 ventana1.addEventListener('minimizar',seMinimizo=>{ 
-    // La función se ejecutará únicamente cuando la ventana se haya terminado de minimizar o desminimizar.
+// La función se ejecutará únicamente cuando la ventana se haya terminado de minimizar o desminimizar.
     if(seMinimizo){
         boton.style.transform = 'scale(1.4) rotate(360deg)';
     }
@@ -1182,7 +1240,9 @@ ventana1.abrir();
 
 ventana1.lienzo.style.backgroundColor = `#059b9add`;
 
-boton.addEventListener('click',ventana1.maximizar);// Si la ventana está visible, la dimensiona al 100% del tamaño del contenedor padre; de lo contrario, la devuelve a su tamaño anterior.
+/* Si la ventana está visible, la dimensiona al 100% del tamaño del contenedor padre; 
+de lo contrario, la devuelve a su tamaño anterior.*/
+boton.addEventListener('click',ventana1.maximizar);
 ```
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbmRhZTR3cjI2dGQwOGJjbmV5MXpxMmYyNzRtcDJrZDVvdW1lbjJleiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/n4mB7vSvvPTVitEY2i/source.gif"alt="gif animado que muestra el resultado del codigo usado en el ejemplo de la función maximizar"></a></p>
 
@@ -1208,7 +1268,7 @@ ventana1.abrir();
 ventana1.lienzo.style.backgroundColor = `#059b9add`;
 
 ventana1.addEventListener('maximizar', seMaximizo=>{
-    // La función se ejecutará únicamente cuando la ventana se maximiza o desmaximiza.
+// La función se ejecutará únicamente cuando la ventana se maximiza o desmaximiza.
     if(seMaximizo){
         barra.style.opacity = '0';
         barra.style.pointerEvents = 'none';
@@ -1264,7 +1324,7 @@ ventana1.abrir();
 ventana1.lienzo.style.backgroundColor = `#059b9add`;
 
 ventana1.addEventListener('cerrar', ()=>{
-    // La función se ejecutará únicamente cuando la ventana se cierre.
+// La función se ejecutará únicamente cuando la ventana se cierre.
     boton.style.opacity = '0';
     boton.style.pointerEvents = 'none';
     });
@@ -1290,7 +1350,9 @@ const ventana1 = new Vanie('windows-claro');
 ventana1.padre = raiz;
 ventana1.abrir();
 
-ventana1.eliminarAlCerrar(false); // Las configuraciones y elementos se mantendrán al momento de cerrar; solo se oculta la ventana y no se elimina.
+/* Las configuraciones y elementos se mantendrán al momento de cerrar; 
+solo se oculta la ventana y no se elimina.*/
+ventana1.eliminarAlCerrar(false); 
 
 ventana1.lienzo.style.backgroundColor = `#059b9add`;
 
@@ -1336,10 +1398,14 @@ ventana1.abrir();
 ventana1.lienzo.style.backgroundColor = `#059b9add`;
 
 botonDer.addEventListener('click',()=>{
-    ventana1.media('der'); // modifica el tamaño de la ventana al 50% del contendor y lo posiciona a la derecha, si ya esta aplicado la devuelve a su tamaño anterior.
+/* modifica el tamaño de la ventana al 50% del contendor y lo posiciona a la derecha, 
+si ya esta aplicado la devuelve a su tamaño anterior.*/
+    ventana1.media('der'); 
 });
 botonIzq.addEventListener('click',()=>{
-    ventana1.media('izq'); // modifica el tamaño de la ventana al 50% del contendor y lo posiciona a la izquierda, si ya esta aplicado la devuelve a su tamaño anterior.
+/* modifica el tamaño de la ventana al 50% del contendor y lo posiciona a la izquierda, 
+si ya esta aplicado la devuelve a su tamaño anterior.*/
+    ventana1.media('izq'); 
 });
 ```
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNjE3ZTcwcmJ0ZWpucGp3Yms5bmViaW12Z2dzOG1icjAwb3ZkM2h3bSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/U2KxdxfKPJCZwYTZc0/source.gif"alt="gif animado que muestra el resultado del codigo usado en el ejemplo de la función media"></a></p>
@@ -1365,15 +1431,20 @@ ventana1.padre = raiz;
 ventana1.abrir();
 const colorOriginal = `#059b9add`
 ventana1.lienzo.style.backgroundColor = colorOriginal;
-ventana1.addEventListener('media',data=>{// Ejecutar la función cuando la ventana se posicione a un lado.
+
+// Ejecutar la función cuando la ventana se posicione a un lado.
+ventana1.addEventListener('media',data=>{
     if(data.estado){
         if(data.lado == 'izq')
-            ventana1.lienzo.style.backgroundColor = `#fdec6fdd`; // Amarillo si está a la izquierda.
+        // Amarillo si está a la izquierda.
+            ventana1.lienzo.style.backgroundColor = `#fdec6fdd`; 
         else
-            ventana1.lienzo.style.backgroundColor = `#ff6e49dd`; // Naranja si está a la derecha.
+        // Naranja si está a la derecha.
+            ventana1.lienzo.style.backgroundColor = `#ff6e49dd`; 
     }
     else
-        ventana1.lienzo.style.backgroundColor = colorOriginal;// Restablecer el color de fondo original.
+        // Restablecer el color de fondo original.
+        ventana1.lienzo.style.backgroundColor = colorOriginal;
 });
 
 botonDer.addEventListener('click',()=>{
@@ -1395,8 +1466,11 @@ instanciaVanie.removeEventListener('maximizar',funcion_Maximizar);
 instanciaVanie.removeEventListener('cerrar',funcion_Cerrar);
 instanciaVanie.removeEventListener('media',funcion_Media);
 ```
+</br>
 
-#### Gestos:
+---
+
+### Gestos
 
 Las ventanas creadas con **Vanie** vienen equipadas con gestos que simplifican el uso de las funciones `maximizar` y `media`:
  + `maximizar`: Si arrastras la ventana hacia la parte superior, se maximiza automáticamente. También puedes hacer **doble clic** sobre la barra de título para lograr el mismo efecto.
@@ -1434,8 +1508,8 @@ const windowsXp = {
         },
     // elemento a modificar: vaya a la sección estructura para tener una idea más clara de lo que está modificando.
     ventana: {
-        //clase con la que se identificará el elemento en cuestión.
-        //Por recomendación, asigné el nombre del estilo seguido del elemento al que pertenece.
+        /*clase con la que se identificará el elemento en cuestión.
+        Por recomendación, asigné el nombre seguido del elemento al que pertenece.*/
         class: "xp--ventana",
         // Si a css se le asigna un string con el estilo, se modifica el estilo del elemento en cuestión.
         css: "border: 3px solid #0831d9;"
@@ -1476,7 +1550,8 @@ const windowsXp = {
 
         active: modifica el estado active del elemento.
 
-        directo: te da la libertad de modificar tanto elementos hijos como subclases del elemento, así que no se te olvide poner llaves.*/
+        directo: te da la libertad de modificar tanto elementos hijos como subclases del elemento,
+        así que no se te olvide poner llaves.*/
         css:{
             estilo:'position:relative;',
             directo:`::before{
@@ -1513,13 +1588,14 @@ const windowsXp = {
 
         contenido: permite asignarle un contenido a los botones
         ya sea un innerHtml con la imagen del botón requerido, alguna letra o emoji
-        o en este caso el svg del botón predeterminado usando [ -p ] seguido del color que se desea [ #fff ] y por 
-        ultimo el tamaño que puede escribir como [ 20 ] para indicar un cuadrado o puede hacerlo como [ 20 20 ]
-        que serían su ancho y alto.
+        o en este caso el svg del botón predeterminado usando [ -p ] 
+        seguido del color que se desea [ #fff ] y por 
+        ultimo el tamaño que puede escribir como [ 20 ] para indicar un cuadrado 
+        o puede hacerlo como [ 20 20 ] que serían su ancho y alto.
         
         Todos los botones poseen svg predeterminados, pero
-        solo maximizar posee 2 predeterminados a los cuales puede acceder usando [ -p ] o [ --p ] para su segunda versión.
-        predeterminada*/
+        solo maximizar posee 2 predeterminados a los cuales puede acceder usando [ -p ] 
+        o [ --p ] para su segunda versión predeterminada*/
         contenido: "-p #fff 20",
         css: `
             background-color: rgb(218, 70, 0);
@@ -1531,7 +1607,7 @@ const windowsXp = {
         // El lienzo no requiere estilos, por lo que no necesita declarar el parámetro css
         class: "xp--lienzo"
         },
-    /* este elemento es el marco que aparece cuando realiza los gestos al arrastrar la ventana a la parte superior o a los costados.
+    /* este elemento es el marco que aparece cuando realiza los gestos al arrastrar la ventana.
     trate de evitar poner el elemento css las propiedades {hover,active,directo}, ya que no son ocupadas */
     marco: {
         class: "xp--marco",
@@ -1546,18 +1622,21 @@ const windowsXp = {
         class: "xp--botones",
         //información de los botones.
         data: {
-            //w Asigné aquí el ancho del botón con un número obligatoriamente, ya que si no lo hace generará un error.
+            /*w Asigné aquí el ancho del botón con un número obligatoriamente,
+            ya que si no lo hace generará un error.*/
             w: 22,
-            //h Asigne aquí la altura del botón con un número o el string con el porcentaje, ya que si no lo hace, generará un error.
+            /*h Asigne aquí la altura del botón con un número o el string con el porcentaje, 
+            ya que si no lo hace, generará un error.*/
             h: 22,
             // El espacio entre botones, si no desea ningún espacio, asigne 0.
             espacio: 1,
-            // aquí define el orden que tendrán los botones, por favor evite repetir algún botón, ya que podría generar un error.
+            /* aquí define el orden que tendrán los botones, por favor evite repetir algún botón, 
+            ya que podría generar un error.*/
             distribucion: ["minimizar","maximizar","cerrar"]
         },
         /* estilo de todos los botones
-        no se preocupe por la alineación de los botones, ya que se hace de forma automática, por lo que.
-        no necesita modificar la propiedad display.*/
+        no se preocupe por la alineación de los botones, ya que se hace de forma automática, 
+        por lo que no necesita modificar la propiedad display.*/
         css: {
             estilo: `
                 border: 1px solid white;
@@ -1658,11 +1737,18 @@ const windowsXp = {
         /*... el resto del codigo para el estilo windows xp*/},}
 
 const raiz = document.getElementById('raiz');
-globalVanie.establecerBase('linux-oscuro');  // Se establece el estilo predeterminado
-globalVanie.agregarEstilo(windowsXp);  // Se agrega el nuevo estilo de forma global
 
-const ventana1 = new Vanie();  // Ventana con el estilo predeterminado
-const ventana2 = new Vanie('xp');  // Ventana con el estilo windowsXp
+// Se establece el estilo predeterminado
+globalVanie.establecerBase('linux-oscuro');
+
+// Se agrega el nuevo estilo de forma global
+globalVanie.agregarEstilo(windowsXp);
+
+// Ventana con el estilo predeterminado
+const ventana1 = new Vanie();
+
+// Ventana con el estilo windowsXp
+const ventana2 = new Vanie('xp');  
 ventana1.padre = ventana2.padre = raiz;
 
 ventana2.abrir();
@@ -1689,8 +1775,12 @@ const windowsXp = {
 
 const raiz = document.getElementById('raiz');
 const btnCambiarEstilo = document.getElementById('btn');
-globalVanie.establecerBase('linux-oscuro');  // Se establece el estilo predeterminado
-globalVanie.agregarEstilo(windowsXp);  // Se agrega el nuevo estilo de forma global
+
+// Se establece el estilo predeterminado
+globalVanie.establecerBase('linux-oscuro');
+
+// Se agrega el nuevo estilo de forma global
+globalVanie.agregarEstilo(windowsXp);  
 
 const ventana1 = new Vanie;
 const ventana2 = new Vanie;
@@ -1709,7 +1799,7 @@ ventana1.addEventListener('abrir',()=>{
     ventana1.lienzo.style.placeContent = 'center';
 
     boton.addEventListener('click',()=>{
-        // Cambia el estilo predeterminado de la ventana, este estilo no puede ser modificado por globalVanie.
+// Cambia el estilo predeterminado de la ventana, este estilo no puede ser modificado por globalVanie.
         ventana1.cambiarEstiloBase('xp'); 
     });
 });
@@ -1718,7 +1808,7 @@ ventana2.abrir();
 ventana1.abrir();
 
 btnCambiarEstilo.addEventListener('click',()=>{
-    // Cambia el estilo predeterminado de las ventanas.
+// Cambia el estilo predeterminado de las ventanas.
     globalVanie.establecerBase('mac-claro'); 
 });
 ```
@@ -1739,8 +1829,12 @@ const windowsXp = {
 
 const raiz = document.getElementById('raiz');
 const btnCambiarEstilo = document.getElementById('btn');
-globalVanie.establecerBase('linux-oscuro');  // Se establece el estilo predeterminado
-globalVanie.agregarEstilo(windowsXp);  // Se agrega el nuevo estilo de forma global.
+
+// Se establece el estilo predeterminado
+globalVanie.establecerBase('linux-oscuro');
+
+// Se agrega el nuevo estilo de forma global.
+globalVanie.agregarEstilo(windowsXp);
 
 const ventana1 = new Vanie;
 const ventana2 = new Vanie;
@@ -1875,12 +1969,14 @@ linux_ventana.dApertura = dimension;
 linux_ventana.addEventListener('abrir',()=>{
     linux_ventana.lienzo.style.backgroundColor = `#059b9add`;
 
-    windows_ventana.padre = linux_ventana.lienzo; // windows_ventana se alojara dentro de la ventana linux_ventana.
+// windows_ventana se alojara dentro de la ventana linux_ventana.
+    windows_ventana.padre = linux_ventana.lienzo; 
     windows_ventana.dApertura = dimension;
     windows_ventana.abrir();
     windows_ventana.lienzo.style.backgroundColor = `#ff6e49dd`});
 
-linux_ventana.addEventListener('cerrar',windows_ventana.cerrar);// al cerrar linux_ventana llamara la funcion cerrar de windows_ventana.
+// al cerrar linux_ventana llamara la funcion cerrar de windows_ventana.
+linux_ventana.addEventListener('cerrar',windows_ventana.cerrar);
 
 linux_ventana.abrir();
 boton.addEventListener('click', linux_ventana.abrir);
@@ -1896,7 +1992,8 @@ Para solucionar este primer problema, puede usar la función [eliminar](#elimina
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWNuOWxhMnhtd3ExZ2I4eG5lejR1cDQ5OTJzaWt5NWg2a3R6c3BweSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/8AFGhl3rhEmFQ87zr6/source.gif"alt="gif animado que muestra el resultado de la solucion del codigo de una ventana dentro de otra"></a></p>
 
 ``` JavaScript
-linux_ventana.addEventListener('cerrar',windows_ventana.eliminar);// al cerrar linux_ventana eliminara directamente windows_ventana.
+// al cerrar linux_ventana eliminara directamente windows_ventana.
+linux_ventana.addEventListener('cerrar',windows_ventana.eliminar);
 ```
 Si bien esto soluciona el problema del cerrado de windows_ventana esto genera un nuevo problema y es que cuando [globalVanie](#globalvenie) emite la señal de ventanas visible no detecta que windows_ventana se ha eliminado y asume que se ha abierto una nueva ventana.  
 Esto se debe a que la función [eliminar](#eliminar) cuando quiere emitir una señal a globalVanie de que la ventana se ha cerrado se encuentra que el contenedor padre ha sido eliminado, *`"recordar que las ventanas destruyen su contenido"`* por lo que asume que esa señal ha sido enviada.
@@ -1910,10 +2007,14 @@ const boton = document.getElementById('btn');
 
 const linux_ventana = new Vanie('linux-oscuro');
 const windows_ventana = new Vanie('windows-claro');
-windows_ventana.desconectarseDelGestor(); // Se desconecta del gestor global por lo que su comportamiento sera ignorado por las demas ventanas y globalVanie.
 
-globalVanie.addEventListener('vista',ventana=>{// Para saber mas vaya a la seccion globalVanie
-    contador.innerText = 'ventanas en pantalla: ' + ventana.visibles; //informa sobre el numero de ventanas mostradas en pantalla.
+// Se desconecta del gestor global por lo que su comportamiento sera ignorado por las demas ventanas y globalVanie.
+windows_ventana.desconectarseDelGestor();
+
+// Para saber mas vaya a la seccion globalVanie
+globalVanie.addEventListener('vista',ventana=>{
+    //informa sobre el numero de ventanas mostradas en pantalla.
+    contador.innerText = 'ventanas en pantalla: ' + ventana.visibles;  
     });
 
 linux_ventana.padre = raiz;
@@ -1924,12 +2025,14 @@ linux_ventana.dApertura = dimension;
 linux_ventana.addEventListener('abrir',()=>{
     linux_ventana.lienzo.style.backgroundColor = `#059b9add`;
 
-    windows_ventana.padre = linux_ventana.lienzo; // windows_ventana se alojara dentro de la ventana linux_ventana.
+// windows_ventana se alojara dentro de la ventana linux_ventana.
+    windows_ventana.padre = linux_ventana.lienzo; 
     windows_ventana.dApertura = dimension;
     windows_ventana.abrir();
     windows_ventana.lienzo.style.backgroundColor = `#ff6e49dd`});
 
-linux_ventana.addEventListener('cerrar',windows_ventana.eliminar);// al cerrar linux_ventana eliminara directamente windows_ventana.
+// al cerrar linux_ventana eliminara directamente windows_ventana.
+linux_ventana.addEventListener('cerrar',windows_ventana.eliminar);
 
 linux_ventana.abrir();
 boton.addEventListener('click', linux_ventana.abrir);
@@ -1991,7 +2094,8 @@ ventana2.lienzo.style.backgroundColor = `#fdec6fdd`;
 ventana3.lienzo.style.backgroundColor = `#ff6e49dd`;
 ventana4.lienzo.style.backgroundColor = `#9ae07ddd`;
 
-boton.addEventListener('click', ventana1.subir); //  Posiciona la ventana 1 por encima de las demás ventanas.
+// Posiciona la ventana 1 por encima de las demás ventanas.
+boton.addEventListener('click', ventana1.subir); 
 ```
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaDJzdXNuOW90MWh6ZzVvM3JncWtwZzdia3U0ZXJrdzlwaWlqNmQ1bCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/fSO5lp3LavdawK1QIT/source.gif"alt="gif animado que muestra el resultado de la solucion del ejemplo desconectarseDelGestor"></a></p>
 
@@ -2071,7 +2175,9 @@ El método `conectarseA` permite conectar un elemento del **DOM** para que sea u
 import { globalVanie , Vanie } from 'vanie';
 
 const raiz = document.getElementById('raiz');
-globalVanie.conectarseA(raiz); // Todas las ventanas tendrán el mismo contenedor padre.
+
+// Todas las ventanas tendrán el mismo contenedor padre.
+globalVanie.conectarseA(raiz);
 
 // Crear nuevas ventanas con Vanie
 const ventana1 = new Vanie('linux-oscuro');
@@ -2097,8 +2203,11 @@ import { globalVanie , Vanie } from 'vanie';
 
 const raiz = document.getElementById('raiz');
 
-globalVanie.conectarseA(raiz); // Todas las ventanas tendrán el mismo contenedor padre.
-globalVanie.establecerBase('linux-oscuro'); // Todas las ventanas tendrán el mismo estilo.
+// Todas las ventanas tendrán el mismo contenedor padre.
+globalVanie.conectarseA(raiz);
+
+// Todas las ventanas tendrán el mismo estilo.
+globalVanie.establecerBase('linux-oscuro'); 
 
 // Crear nuevas ventanas con Vanie
 const ventana1 = new Vanie;
@@ -2123,9 +2232,11 @@ import { globalVanie , Vanie } from 'vanie';
 
 const raiz = document.getElementById('raiz');
 
-globalVanie.conectarseA(raiz); // Todas las ventanas tendrán el mismo contenedor padre.
-globalVanie.establecerBase('linux-oscuro'); // Todas las ventanas tendrán el mismo estilo base.
+// Todas las ventanas tendrán el mismo contenedor padre.
+globalVanie.conectarseA(raiz); 
 
+// Todas las ventanas tendrán el mismo estilo base.
+globalVanie.establecerBase('linux-oscuro'); 
 //vaya a la seccion "modificar estilos" para aprender a crear y personalizar sus propios estilos.
 const estiloPersonalizado = {
     data:{
@@ -2133,14 +2244,17 @@ const estiloPersonalizado = {
     }
     // Otros parámetros de personalización...
 }
-// Agrega un nuevo estilo a la lista para ser usado únicamente cuando se especifique el nombre del estilo en una ventana.
+/* Agrega un nuevo estilo a la lista para ser usado únicamente cuando se especifique
+el nombre del estilo en una ventana.*/
 globalVanie.agregarEstilo(estiloPersonalizado);
 
 // Crear nuevas ventanas con Vanie
 const ventana1 = new Vanie;
 const ventana2 = new Vanie;
 const ventana3 = new Vanie;
-const ventana4 = new Vanie('miEstilo');// Ventana que utilizará el estilo personalizado.
+
+// Ventana que utilizará el estilo personalizado.
+const ventana4 = new Vanie('miEstilo');
 
 // Abrir las ventanas
 ventana1.abrir();
@@ -2159,8 +2273,11 @@ import { globalVanie , Vanie } from 'vanie';
 
 const raiz = document.getElementById('raiz');
 
-globalVanie.conectarseA(raiz); // Todas las ventanas tendrán el mismo contenedor padre.
-globalVanie.establecerBase('linux-oscuro'); // Todas las ventanas tendrán el mismo estilo base.
+// Todas las ventanas tendrán el mismo contenedor padre.
+globalVanie.conectarseA(raiz); 
+
+// Todas las ventanas tendrán el mismo estilo base.
+globalVanie.establecerBase('linux-oscuro'); 
 
 // Crear nuevas ventanas con Vanie
 // Cada vez que se crea una instancia de Vanie, esta se registra en globalVanie.
@@ -2188,8 +2305,10 @@ import { globalVanie , Vanie } from 'vanie';
 
 const raiz = document.getElementById('raiz');
 
-globalVanie.conectarseA(raiz); 
-globalVenie.renmbrarIdGlobal('nuevo_id_global') // Solo deberías cambiar el nombre de la clase global si interfiere con tu diseño.
+globalVanie.conectarseA(raiz);
+
+// Solo deberías cambiar el nombre de la clase global si interfiere con tu diseño.
+globalVenie.renmbrarIdGlobal('nuevo_id_global') 
 globalVanie.establecerBase('linux-oscuro');
 
 const ventana1 = new Vanie;
@@ -2244,7 +2363,8 @@ const ventana4 = new Vanie;
 
 globalVanie.ventanasForEach(ventana=>{
     ventana.abrir();
-    ventana.lienzo.classList.add(globalVanie.globalClass('bloqueado'));// Se asigna la clase que bloquea toda la interactividad a lienzo.
+// Se asigna la clase que bloquea toda la interactividad a lienzo.
+    ventana.lienzo.classList.add(globalVanie.globalClass('bloqueado'));
 });
 ```
 
@@ -2293,7 +2413,8 @@ globalVanie.conectarseA(raiz).establecerBase('linux-oscuro');
 
 let numeroDeinstanciasVanie = 0;
 
-// Cada vez que se registra una instancia Vanie, se ejecuta la función signada, tomando como parámetro la instancia registrada.
+/* Cada vez que se registra una instancia Vanie, se ejecuta la función signada, 
+tomando como parámetro la instancia registrada.*/
 globalVanie.addEventListener('registro', ventana => {
 
     // Personalizar el título y justificar la cabecera
@@ -2315,7 +2436,8 @@ globalVanie.addEventListener('registro', ventana => {
         ventana.cargarURL('https://www.youtube.com/embed/GrG2-oX5z24?si=UPiNV_e5HOBdC7lE');
     }
 
-    ventana.abrir(); // Cada vez que una ventana se registra, se llama automáticamente a su función abrir.
+// Cada vez que una ventana se registra, se llama automáticamente a su función abrir.
+    ventana.abrir(); 
 });
 
 // Crear las instancias Vanie
@@ -2383,25 +2505,32 @@ globalVanie.addEventListener('registro', ventana => {
 
 // Cada vez que una ventana se muestra o se oculta en pantalla, se ejecuta la función asignada.
 globalVanie.addEventListener('vista', v => {
-    contador.innerText = 'Ventanas en pantalla: ' + v.visibles; // Informa sobre el número de ventanas mostradas. en pantalla
+    
+    // Informa sobre el número de ventanas mostradas en pantalla
+    contador.innerText = 'Ventanas en pantalla: ' + v.visibles; 
 
     emoji.style.opacity = 1;
 
     if (!v.visibles) {
+        // Si ya no hay venatanas en pantalla
         emoji.innerText = '❌';
-    } else if (v.seMostro) { // Si se muestra una ventana en pantalla
+    } else if (v.seMostro) { 
+        // Si se muestra una ventana en pantalla
         emoji.innerText = '🎉';
-    } else { // Si se oculta una ventana en pantalla
+    } else { 
+        // Si se oculta una ventana en pantalla
         emoji.innerText = '😰';
     }
 });
 
 boton.addEventListener('click', () => {
-    // Si el número de ventanas registradas no coincide con las ventanas visibles, se iteran para reabrir las ventanas ocultas
+    /* Si el número de ventanas registradas no coincide con las ventanas visibles, 
+    se iteran para reabrir las ventanas ocultas*/
     if (globalVanie.registros != globalVanie.ventanasVisibles) {
         globalVanie.ventanasForEach(ventana => ventana.abrir())
     } else {
-        new Vanie; // Se genera una nueva ventana por cada click en el botón
+        // Se genera una nueva ventana por cada click en el botón
+        new Vanie; 
     }
 });
 
@@ -2457,8 +2586,8 @@ globalVanie.limites = {
 ``` JavaScript
 /*eliminado los limites.*/
 
-// Eliminando el límite asignado, un objeto vacío 
-// o que no contenga ninguno de los parámetros antes mencionados.
+/* Eliminando el límite asignado, un objeto vacío 
+ o que no contenga ninguno de los parámetros antes mencionados.*/
 globalVanie.limites = {};
 
 // eliminado el limite asignando undefined
@@ -2601,14 +2730,16 @@ globalVanie.addEventListener('registro',ventana=>{
 
 btn_verde.addEventListener('click',()=>{
     const id = 1;
-    // asignar un identificador en el constructor le permitira al evento registrar tener acceso a dicho identificador
+    /* asignar un identificador en el constructor le permitira al evento registrar 
+    tener acceso a dicho identificador*/
     new Vanie(undefined,id);
     
 });
 
 btn_rojo.addEventListener('click',()=>{
     const id = 2;
-    // asignar un identificador en el constructor le permitira al evento registrar tener acceso a dicho identificador
+    /* asignar un identificador en el constructor le permitira al evento registrar 
+    tener acceso a dicho identificador*/
     new Vanie(undefined,id);
 });
 ```
@@ -2636,8 +2767,9 @@ icono.appendChild(logo);
 icono.style = 'height:100%;display:grid; place-content:center; padding-inline:10px;';
 
 ventana.ico = icono;
-//Agregando la clase 'bloqueado' a ico para bloquear a asi misma como a sus nodos hijos.
-//Para recordar cómo usar esta función, vaya a la sección configuraciones.
+
+/*Agregando la clase 'bloqueado' a ico para bloquear a asi misma como a sus nodos hijos.
+Para recordar cómo usar esta función, vaya a la sección configuraciones.*/
 ventana.classList('ico','add',globalVanie.globalClass('bloqueado'));
 
 const contenedor = document.createElement('div');
