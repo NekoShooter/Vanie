@@ -31,7 +31,8 @@ export default class Vanie {
  * + **CompiladorCssVanie** El complilador de estilos de algun objeto Vanie: *`instanciaVanie.compiladorCss`*
  */
 
-    constructor(estilo){
+    constructor(estilo,identificador){
+        this.identificador = identificador;
         this.#posicion.apertura.bNuevo('center','center');
         this.abrir = this.abrir.bind(this);
         this.minimizar = this.minimizar.bind(this);
@@ -81,7 +82,7 @@ export default class Vanie {
  * @returns {HTMLElement|undefined}
  */
     get padre(){
-        if(!this.estaConstruido || !this.#v.ventana.parentNode) return this.#padre; 
+        if(!this.estaConstruido || !this.#v?.ventana.parentNode) return this.#padre; 
         this.#padre = this.#v.ventana.parentNode; return this.#padre;}
 /**
  * Asigna o remplaza un objeto **HTMLElement** como padre.
@@ -94,7 +95,7 @@ export default class Vanie {
  * @param {HTMLElement} padre Elemento del DOM que se convertirá en el contenedor principal para el objeto **Vanie**.
  */
     asignarPadre(padre){
-        if(!padre) return;
+        if(!(padre instanceof HTMLElement)) return;
         try{
             const p = this.padre;
             if(p === padre) return;
@@ -111,11 +112,11 @@ export default class Vanie {
     #validarMarco(){
         if(this.#marco || !this.padre) return;
         if(!this.#marco ) 
-            this.#marco  = this.padre.querySelector(`#${this.#css.idMarco}`);
+            this.#marco = this.padre.querySelector(`#${this.#css?.idMarco}`);
 
         if(!this.#marco ){
             this.#marco = document.createElement('div');
-            this.#marco.setAttribute('id',this.#css.idMarco);
+            this.#marco.setAttribute('id',this.#css?.idMarco);
             this.padre.insertBefore(this.#marco,this.padre.firstChild);
             this.#marco.addEventListener('transitionend',()=>{
                 this.#marco.classList.remove(`${globalVanie.idGlobal}--animacion`);});}}
@@ -140,7 +141,7 @@ export default class Vanie {
  * @param {string} str El título que se establecerá en la cabecera del objeto **Vanie**, si se deja vacío `''` este se eliminará.
  */
     set titulo(str){
-        if(typeof str != 'string' || this.#cabecera.str) return;
+        if(typeof str != 'string' || this.#cabecera.str || !this.#css) return;
         const TITULO = str.trim();
         if(!this.#cabecera.titulo.span && TITULO != ''){
             const span = document.createElement('span');
@@ -556,7 +557,7 @@ export default class Vanie {
     #ejecutarFunciones(llave,condicion){this.#funciones[llave]?.forEach(funcion=>{funcion(condicion)});}
 
     #eventoColision(x,y,xm,ym,limite){
-        this.#map.data = VanieAdmin.intColision(x<=limite.der,xm>=limite.izq,y<=limite.sup,ym>=limite.inf);
+        this.#map.data = VanieAdmin.intColision(xm>=limite.der,x<=limite.izq,y<=limite.sup,ym>=limite.inf);
         const exclusion = limite.ref | this.#map.tmp;
         const data = limite.ref | this.#map.data;
 
@@ -578,8 +579,18 @@ export default class Vanie {
         this.#eventoColision(x,y,xm,ym,limite);}
 
     #desaparecerColision(condicion = false){
+        if(!this.#llave || !VanieAdmin.objLimites) return;
         if(condicion){
-            this.#verificarColision('','','','');}
+            if(!this.#map.archivado) return;
+
+            const colision = VanieAdmin.colisiones(this.#llave);
+            
+            if((colision | this.#map.data) != colision){ 
+                VanieAdmin.validarColision(!!(colision&1),!!(colision&2),!!(colision&4),!!(colision&8));}
+                
+            VanieAdmin.eliminarRegistroColision(this.#llave);
+            this.#map.archivado = false;
+            this.#map.tmp = this.#map.data = undefined;}
         else{
             this.#verificarColision(this.x,this.y,this.ancho + this.x,this.alto+this.y);}}
 
@@ -653,10 +664,10 @@ export default class Vanie {
             VanieAdmin.subirPosicion(this);
 
             if(llave == 'media' && this.#estado.mediaPos == 'der') {
-                this.#verificarColision(0,0,w/2,h);
+                this.#verificarColision(w/2,0,w,h);
                 this.#posX('50%');}
             else if(llave == 'media' && this.#estado.mediaPos == 'izq'){
-                this.#verificarColision(w/2,0,w,h);}
+                this.#verificarColision(0,0,w/2,h);}
 
             this.#redondearEsquinas('remove');
 
@@ -668,8 +679,10 @@ export default class Vanie {
             
             this.#v.ventana.classList.add(this.#css.class(accion));}
         else{
-            this.dimension = this.#cache.origen.dimension??this.#cache[llave].dimension;
-            this.posicion = this.#cache.origen.posicion??this.#cache[llave].posicion;
+            const d = this.#cache.origen.dimension??this.#cache[llave].dimension;
+            const p = this.#cache.origen.posicion??this.#cache[llave].posicion;
+            this.dimension = d;
+            this.posicion = p;
             
             this.#validarPosicion(this.#cache.origen.posicion ? this.#cache.origen : this.#cache[llave]);
 
@@ -695,7 +708,10 @@ export default class Vanie {
                 this.#posY(0);
                 data.origen = this.posicion;}
             else{
-                this.#desaparecerColision(true);}
+                //this.#verificarColision(this.x,this.y,this.ancho,this.alto);
+                this.#verificarColision(p.x,p.y,d.w + p.x,d.h+p.y);
+                //this.#desaparecerColision(true);
+            }
 
             if(!this.#estado.mediaPos && !this.#estado.max){
                 this.#cache.origen.dimension = this.#cache.origen.posicion = undefined;}}}
@@ -786,6 +802,7 @@ export default class Vanie {
                     this.#v.ventana.style.transform = 'scale(1,1)';
                 },100);}
             this.#transitionend();
+            this.#desaparecerColision(false);
             this.#ejecutarFunciones('abrir');
             this.#validarPosicion(this);}
 
@@ -824,7 +841,6 @@ export default class Vanie {
 
 //#region reconstruir
     #reConstruir(){
-        if(!this.#estilo_pre && !globalVanie.esElEstiloBase(this.#css)) this.#css = globalVanie.estiloBase;
         if(!this.#css) throw('no se ha asignado ningun estilo');
         this.#v = {};
         this.#estilizar();
@@ -891,7 +907,11 @@ get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
  */
     cambiarEstiloBase(nuevoEstilo){
         this.#estilo_pre = false;
-        this.cambiarEstilo(nuevoEstilo);
+        if(!this.#css){
+            this.#css = globalVanie.agregarEstilo(nuevoEstilo);
+            if(!this.#css) this.#css = globalVanie.obtenerEstilo(nuevoEstilo);}
+        else{
+            this.cambiarEstilo(nuevoEstilo);}
         this.#estilo_pre = !!this.#css;}
 /**
  * Cambia el estilo del objeto **Vanie**
@@ -906,30 +926,35 @@ get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
  */
 
     cambiarEstilo(nuevoEstilo){
-        if(!this.estaConstruido || this.#estilo_pre) return;
+        if(this.#estilo_pre) return;
         const viejo_css = this.#css;
+        
         if(nuevoEstilo instanceof CompiladorCssVanie && nuevoEstilo.esValido) this.#css = nuevoEstilo;
-        else if(typeof nuevoEstilo == 'string' && nuevoEstilo != this.#css.CONFIGURACION.data.nombre){
+        else if(typeof nuevoEstilo == 'string' && nuevoEstilo != this.#css?.CONFIGURACION.data.nombre){
             globalVanie.agregarEstilo(nuevoEstilo);
-            this.#css = globalVanie.obtenerEstilo(nuevoEstilo);}
+            this.#css = globalVanie.obtenerEstilo(nuevoEstilo);
+            }
         else if(typeof nuevoEstilo == 'object'){
             globalVanie.agregarEstilo(nuevoEstilo);
             this.#css = globalVanie.obtenerEstilo(nuevoEstilo); }
         else return;
-        if(!this.#css) throw('error al introducir el nuevo estilo');
-        this.#estilizar(viejo_css);
-        this.#validarPosicion(this);}
+        if(!this.#css) {
+            this.#css = viejo_css;
+            throw('error al introducir el nuevo estilo');}
+        if(this.estaConstruido) {
+            this.#estilizar(viejo_css);
+            this.#validarPosicion(this);}}
 
     #redondearEsquinas(accion){
         if(this.#css.data.radioSup) this.#v.ventana.classList[accion](this.#css.class('radioSup'));
         if(this.#css.data.radio) this.#v.ventana.classList[accion](this.#css.class('radio'));}
 
     #estilizar(viejo_css = undefined){
-        if(!this.#css) return;
+        if(!(this.#css instanceof CompiladorCssVanie)) return;
         const elementos = this.#css.LISTA_DIV;
 
         for(let i = 0; i < elementos.length; i++){
-            if(!viejo_css) this.#v[elementos[i]] = document.createElement('div');
+            if(!viejo_css) {this.#v[elementos[i]] = document.createElement('div');}
             else if(i + 1 < elementos.length && viejo_css.div?.[elementos[i]]?.class) {
                 this.#v[elementos[i]].classList.remove(viejo_css.class(elementos[i]));}
             if(i + 1 < elementos.length && this.#css.div?.[elementos[i]]?.class) {
@@ -1196,11 +1221,7 @@ get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
  * @returns {HTMLElement|undefined}
  */
     get ico(){return this.#v?.ico;}
-/**
- * Retornará la referencia del objeto `CompiladorCssVanie` perteneciente al objeto **Vanie** si se asignó un estilo, de lo contrario retornara `undefined`.
- * @returns {CompiladorCssVanie|undefined}
- */
-    get compiladorCss(){ return this.#css;}
+
 /**
  * Retornará la referencia `div` perteneciente a la ventana del objeto **Vanie** si se encuentra construido, si no lo está, retornará `undefined`.
  * @returns {HTMLElement|undefined}

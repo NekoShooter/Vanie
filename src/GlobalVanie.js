@@ -41,7 +41,6 @@ class AdministradorVanie{
         if(!vanieNodo || !vanieNodo.estaAbierto) return;
 
         const zindex = vanieNodo.ventana.style.zIndex;
-        console.log(this.#ventanas_visibles);
         if(zindex >= this.#ventanas_visibles) return;
         
         for(const nodo of this.nodos.values()){
@@ -96,14 +95,16 @@ class AdministradorVanie{
         const izq = f(this.#limites.izq,0);
         const sup = f(this.#limites.sup,1);
         const inf = f(this.#limites.inf,1);
-        if((der==undefined&&izq==undefined&&sup==undefined&&inf==undefined)||(sup??'')>=inf||(der??'')>=izq)return undefined;
-        let colision = 0;
-        for(const [clave,valor] of this.trueColision){if(clave != llave) colision |= valor;}
-        return{der:der,izq:izq,sup:sup,inf:inf,ref:colision}}
+        if((der==undefined&&izq==undefined&&sup==undefined&&inf==undefined)||(sup??'')>=inf||(izq??'')>=der)return undefined;
+        return{der:der,izq:izq,sup:sup,inf:inf,ref:this.colisiones(llave)}}
 
     get objLimites(){return this.#limites;}
 
     intColision(der,izq,sup,inf){ return der|izq<<1|sup<<2|inf<<3;}
+    colisiones(llave){
+        let colision = 0;
+        for(const [clave,valor] of this.trueColision){if(clave != llave) colision |= valor;}
+        return colision;}
 
     eventos(evento,fn){
         const listaDeEventos = this.#eventos[evento]
@@ -228,10 +229,10 @@ class GestorVanie{
  * }
  */
     set limites(o){
-        if(o == undefined || o == 0 || o == ''){
+        if(o == undefined || o == 0 || o == ''|| (o.der == undefined&&o.izq == undefined&&o.sup == undefined&&o.inf== undefined)){
                 VanieAdmin.eliminarLimites();
                 return;}
-        try{ 
+        try{
             this.#establecerLimites(o.der,o.izq,o.sup,o.inf);}catch(err){
             console.error('--OBJETO INVALIDO--');
             console.info(`Caracteristicas que debe contener un objeto valido:
@@ -286,7 +287,7 @@ class GestorVanie{
         else{
             try{
                 if(!this.#__buscarEstiloPersonalizado(estilo.data.nombre)){
-                    cf = new CompiladorCssVanie(cf,this.#idglobal)
+                    cf = new CompiladorCssVanie(estilo,this.#idglobal);
                     if(!cf.esValido) return undefined;
                     this.#Epersonalizados.push(cf);}
             }catch(error){

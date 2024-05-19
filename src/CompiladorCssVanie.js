@@ -5,7 +5,7 @@ export default class CompiladorCssVanie{
         this.LISTA_BOTONES = Object.freeze(['minimizar','maximizar','cerrar']);
         this.LISTA_DIV = Object.freeze([...['ventana','barra','ico','cabecera','divBotones'],...this.LISTA_BOTONES,'lienzo']);
         this.modificarGlobal(global);
-            
+
         if(typeof(nombre_sistema) == 'string')
             this.asignarEstilosPredeterminados(nombre_sistema);
         else if(typeof(nombre_sistema) == 'object')
