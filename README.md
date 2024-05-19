@@ -765,6 +765,9 @@ console.log(ventana1.desplazo);
 
 > ⚠ Tener en cuenta que el desplazamiento afecta a otras transformaciones, por lo que si desea que el desplazamiento se convierta en las coordenadas finales de la ventana, necesita hacer los cálculos necesarios y asignarlo a la [posicion](#posicion) de la ventana.
 
+---
+</br>
+
 ### Dimensión
 Son un conjunto de propiedades y funciones que lo ayudaran a gestionar de una forma facil la dimensión de las ventanas creadas por **Vanie**.
 
@@ -1039,9 +1042,8 @@ ventana.redimensionar(false);// bloquea la redimension.
 vantana.redimensionar(true); // desbloquea la redimension.
 ventana.abrir();
 ```
-</br>
-
 ---
+</br>
 
 ### Botones y Eventos
 
@@ -1466,9 +1468,8 @@ instanciaVanie.removeEventListener('maximizar',funcion_Maximizar);
 instanciaVanie.removeEventListener('cerrar',funcion_Cerrar);
 instanciaVanie.removeEventListener('media',funcion_Media);
 ```
-</br>
-
 ---
+</br>
 
 ### Gestos
 
@@ -1478,9 +1479,11 @@ Las ventanas creadas con **Vanie** vienen equipadas con gestos que simplifican e
  + **Volver al tamaño original**: Si ya has maximizado o redimensionado la ventana, y deseas regresar a su tamaño original, simplemente arrástrala hacia el centro del contenedor padre, y recuperará su tamaño anterior.
 
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExemxlOTN5OXlvdDJmbGNyN2p1dGN3MXpucTduaXQ3YTBqMjF3b2lyZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/zuuc9zjIBqkavROvQF/source.gif"alt="gif animado que muestra el resultado de los gestos"></a></p>
-</br>
 
 ---
+</br>
+
+
 
 ### Modificar estilos
 
@@ -1869,11 +1872,10 @@ btnCambiarEstilo.addEventListener('click',()=>{
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWhyN2FiMG56aWRldDdrMno3aHJnazY2MHh6bGdkZnVtNjloMTI3YSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/cVleozVhjrGyLege7b/source.gif"alt="gif animado que muestra el resultado de cambiarEstilo"></a></p>
 
 #### estilo: 
-La propiedad estilo retorna el string con el nombre del estilo que posee la ventana actualmente.
-
-</br>
+La propiedad estilo retorna el string con el nombre del estilo que posee la ventana actualmente.  
 
 ---
+</br>
 
 ### Validadores
 
@@ -1902,9 +1904,10 @@ Los validadores son un conjunto de propiedades que te permiten conocer el estado
 + **`seMueve`**: Retorna `true` si la ventana está siendo arrastrada, y `false` si no lo está. Esta propiedad se actualiza en tiempo real y requiere monitoreo constante, por ejemplo, mediante el **evento `'mousemove'`**.  
 
 + **`seRedimensiona`**:  Retorna `true` si la ventana está siendo redimensionada con el puntero del mouse, y `false` si no lo está. Al igual que *seMueve*, esta propiedad se actualiza en tiempo real y requiere monitoreo constante, por ejemplo, mediante el **evento `'mousemove'`**.  
+---
 </br>
 
----
+
 ### Configuraciones
 Los configuradores son una serie de propiedades y funciones que como el titulo indica su objetivo es hacer una configuracion mas detallada de las ventanas creadas con **Vanie**.
 
@@ -2148,10 +2151,10 @@ ventana.id('lienzo','id-lienzo'); // Agraga el id a lienzo
 ventana.id('lienzo',''); // Remueve el id de lienzo.
 ventana.abrir();
 ```
+---
 
 </br>
 
----
 
 ### globalVenie
 `globalVenie` es una instancia global de GestorVanie diseñada para registrar, gestionar y administrar la actividad realizada por las ventanas creadas con Vanie. Esta función facilita la coordinación de acciones entre ventanas.
@@ -2655,9 +2658,9 @@ for(let i = 0; i < 4; i++)
 ```
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMTd5cXpva3pxaW1sa2xqdGRlYmkwNXA2cTgzY2VxcWQ3OXllOW8xbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/dEZBuwfCcAmzZS6pMl/source.gif"alt="gif animado que muestra el resultado del codigo de ejemplo de Evento colision"></a></p>
 
+---
 </br>
 
----
 ### Recomendaciones finales
 
 A continuación, se presentan algunas recomendaciones útiles para optimizar el uso de la librería **Vanie** en su proyecto, especialmente cuando maneja múltiples ventanas.
