@@ -156,8 +156,8 @@ const listaDeDiv = ()=>{
     }
     return list;
 }
-
-ventana3.cabecera = listaDeDiv(); // Cambiando el contenido de la cabercera con una lista de objetos HTMLElement.
+// Cambiando el contenido de la cabercera con una lista de objetos HTMLElement.
+ventana3.cabecera = listaDeDiv(); 
 
 ventana1.abrir();
 ventana2.abrir();
@@ -193,8 +193,11 @@ const ventana1 = new Vanie('mac-claro');
 const ventana2 = new Vanie('linux-oscuro');
 ventana2.padre = ventana1.padre = raiz;
 
-ventana1.cabecera = '<h2> ventana 1 <h2>'; // Usando innerHtml para establecer un título en la cabecera.
-ventana2.titulo = 'ventana 2' // Asignando un string como título a la ventana2.
+// Usando innerHtml para establecer un título en la cabecera.
+ventana1.cabecera = '<h2> ventana 1 <h2>';
+
+// Asignando un string como título a la ventana2.
+ventana2.titulo = 'ventana 2';
 
 ventana1.abrir();
 ventana2.abrir();
@@ -261,8 +264,11 @@ img.style.height = '100%';
 img.style.aspectRatio = 1;
 img.setAttribute('src','https://cdn.icon-icons.com/icons2/643/PNG/512/mac-apple-osx-desktop-software-hardware_icon-icons.com_59289.png');
 
-ventana1.ico = img; // Asignando un HTMLElement como nodo hijo de ico.
-ventana2.ico = '<div style ="font-size:30px;">💬</div>' // Usando innerHtml para establecer el contenido de ico.
+// Asignando un HTMLElement como nodo hijo de ico.
+ventana1.ico = img;
+
+// Usando innerHtml para establecer el contenido de ico.
+ventana2.ico = '<div style ="font-size:30px;">💬</div>';
 
 ventana1.justificarCabecera = ventana2.justificarCabecera = 'center';
 
@@ -310,24 +316,28 @@ const listaDiv = ()=>{
         list.push(div);}
     return list;
 }
-ventana3.lienzo = listaDiv(); // asigna cada HTMLElement contenida en el Array como un nodo hijo al lienzo;
+// asigna cada HTMLElement contenida en el Array como un nodo hijo al lienzo;
+ventana3.lienzo = listaDiv(); 
 
 const img = new Image;
 img.style.width = img.style.height = '100%';
 img.setAttribute('src','https://get.wallhere.com/photo/sky-digital-art-nature-clouds-anime-2304638.jpg');
 
-ventana2.lienzo = img; // asigna el HTMLElement como nodo hijo al contenedor HTMLElement del lienzo.
+// asigna el HTMLElement como nodo hijo al contenedor HTMLElement del lienzo.
+ventana2.lienzo = img;
 
+// asigna el string al innerHTML al contenedor HTMLElement del lienzo.
 ventana1.lienzo = 
     `<div style="width:100%; height:100%; background-color:#252850; color:white; font-size:24px;">
         contenido del lienzo
-    </div>`; // asigna el string al innerHTML al contenedor HTMLElement del lienzo.
+    </div>`;
 
 ventana1.abrir();
 ventana2.abrir();
 ventana3.abrir();
 
-console.log(ventana1.lienzo, ventana2.lienzo, ventana3.lienzo); // retorna la referencia del contenedor HTMLElement del lienzo.
+// retorna la referencia del contenedor HTMLElement del lienzo.
+console.log(ventana1.lienzo, ventana2.lienzo, ventana3.lienzo); 
 ```
 
 **get** -  _**lienzo**_ Si se ha construido satisfactoriamente la instancia **Vanie**, retornará el `HTMLElement` que pertenece al lienzo de la ventana de lo contrario, retornará `undefined`.  
@@ -370,10 +380,14 @@ const listaDiv = ()=>{
 }
 
 ventana1.lienzo = listaDiv();
-ventana1.lienzo = listaDiv(); // Borra los elementos anteriores para asignar los nuevos elementos al lienzo
+
+// Borra los elementos anteriores para asignar los nuevos elementos al lienzo
+ventana1.lienzo = listaDiv(); 
 
 ventana2.lienzo = listaDiv();
-ventana2.lienzoAgrega(...listaDiv()); // Agrega los elementos adicionales al lienzo
+
+// Agrega los elementos adicionales al lienzo
+ventana2.lienzoAgrega(...listaDiv()); 
 
 ventana1.abrir();
 ventana2.abrir();
@@ -509,8 +523,9 @@ ventana1.lienzo = iframe; // Aseguramos la persistencia del diseño
 
 // Vaya a la sección de botones y eventos para conocer más detalles de esta función.
 ventana2.addEventListener('abrir',()=>{
-    // Una forma de falsear la persistencia
-    // Cada vez que el objeto sea construido y mostrado, las configuraciones hechas también serán ingresadas.
+    /* Una forma de falsear la persistencia.
+    Cada vez que el objeto sea construido y mostrado,
+    las configuraciones hechas también serán ingresadas.*/
     ventana2.lienzo.innerHTML = iframe;
 });
 
@@ -1434,7 +1449,7 @@ ventana1.abrir();
 const colorOriginal = `#059b9add`
 ventana1.lienzo.style.backgroundColor = colorOriginal;
 
-// Ejecutar la función cuando la ventana se posicione a un lado.
+// Ejecutar la función cuando la ventana emita el evento media.
 ventana1.addEventListener('media',data=>{
     if(data.estado){
         if(data.lado == 'izq')
@@ -1474,9 +1489,11 @@ instanciaVanie.removeEventListener('media',funcion_Media);
 ### Gestos
 
 Las ventanas creadas con **Vanie** vienen equipadas con gestos que simplifican el uso de las funciones `maximizar` y `media`:
- + `maximizar`: Si arrastras la ventana hacia la parte superior, se maximiza automáticamente. También puedes hacer **doble clic** sobre la barra de título para lograr el mismo efecto.
+ + `maximizar`: Si arrastras la ventana hacia la parte superior, se maximiza automáticamente.  
+ También puedes hacer **doble clic** sobre la barra de título para lograr el mismo efecto.  
+
  + `media` : Arrastrar la ventana hacia la derecha o izquierda la redimensionará automáticamente para ocupar la mitad de la pantalla.
- + **Volver al tamaño original**: Si ya has maximizado o redimensionado la ventana, y deseas regresar a su tamaño original, simplemente arrástrala hacia el centro del contenedor padre, y recuperará su tamaño anterior.
+ + **Volver al tamaño original**: Si ya has maximizado o aplicado media a la ventana, y deseas regresar a su tamaño original, simplemente arrástrala hacia el centro del contenedor padre, y recuperará su tamaño anterior.
 
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExemxlOTN5OXlvdDJmbGNyN2p1dGN3MXpucTduaXQ3YTBqMjF3b2lyZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/zuuc9zjIBqkavROvQF/source.gif"alt="gif animado que muestra el resultado de los gestos"></a></p>
 
@@ -1748,7 +1765,7 @@ globalVanie.establecerBase('linux-oscuro');
 globalVanie.agregarEstilo(windowsXp);
 
 // Ventana con el estilo predeterminado
-const ventana1 = new Vanie();
+const ventana1 = new Vanie;
 
 // Ventana con el estilo windowsXp
 const ventana2 = new Vanie('xp');  
@@ -1760,7 +1777,7 @@ ventana1.abrir();
 
 <p align="center"><a href="#"><img src="https://i.ibb.co/HgqfYkw/linuxp.jpg"alt="imagen que muestra el resultado de globalVanie.agregarEstilo"></a></p>
 
-> Vaya a la seccion de [globalVanie](#globalvenie) para conocer mas de esta instancia y sus funciones.
+> Vaya a la seccion de [globalVanie](#globalvenie) para conocer mas sobre esta instancia y sus funciones.
 
 Continuando con las funciones de Vanie: 
 
@@ -2050,7 +2067,7 @@ Esto es útil cuando hay ventanas con diferentes contenedores padres o si se des
 
 #### eliminar:
 
-Elimina el contenido interno del a ventana.
+Elimina el contenido interno de la ventana.
 
 ``` JavaScript
 import Vanie from 'vanie';
@@ -2771,8 +2788,8 @@ icono.style = 'height:100%;display:grid; place-content:center; padding-inline:10
 
 ventana.ico = icono;
 
-/*Agregando la clase 'bloqueado' a ico para bloquear a asi misma como a sus nodos hijos.
-Para recordar cómo usar esta función, vaya a la sección configuraciones.*/
+/*Agregando la clase 'bloqueado' a ico para bloquearla a asi misma como a sus nodos hijos.
+Para recordar cómo usar la función classList, vaya a la sección configuraciones.*/
 ventana.classList('ico','add',globalVanie.globalClass('bloqueado'));
 
 const contenedor = document.createElement('div');
