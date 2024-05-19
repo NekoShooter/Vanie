@@ -132,7 +132,7 @@ body{
 #lienzo h1::before{
     font-size: 2rem;
     content:'<Vanie/>';}
-#lienzo p::before{content:'Sientete libre';}
+#lienzo p::before{content:'Elige el estilo que mas te guste';}
 #lienzo #claroscuro{
     position: absolute;
     border-radius: 50%;

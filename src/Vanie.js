@@ -687,12 +687,13 @@ export default class Vanie {
             this.#validarPosicion(this.#cache.origen.posicion ? this.#cache.origen : this.#cache[llave]);
 
             if(llave == 'max'){
-                if(this.#estado.media) this.#v.ventana.classList.add(this.#css.class('media'));
+                if(this.#estado.media) 
+                    this.#v.ventana.classList.add(this.#css.class('media'));
                 this.#reglas('add')}
             else{
                 this.#estado.mediaPos = undefined;}            
             
-            this.#redondearEsquinas('add');
+            this.#redondearEsquinas(['add','remove'][+(this.#estado.media | this.#estado.max)]);
             this.#v.ventana.classList.remove(this.#css.class(accion));
             //#region reposicionador
             if(e && data?.sinAnimacion){
