@@ -2823,3 +2823,4 @@ ventana.abrir();
 
 <p align="center"><a href="#"><img src="https://i.ibb.co/QXmg82D/presonalizada.jpg"alt="gif animado que muestra el resultado del codigo de ejemplo de globalVanie.globalClass('bloqueado')"></a></p>
 
+###### *Todos los personajes presentados en esta librería fueron diseñados y creados por mí ~ [Neko ★ Shooter.](https://github.com/NekoShooter)*
