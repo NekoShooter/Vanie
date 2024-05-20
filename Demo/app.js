@@ -142,7 +142,7 @@ function main(){
     contenidoMenu(menu);
     menu.abrir();
 
-    vs_code.cargarURL('https://github1s.com/NekoShooter/Vanie/blob/master/index.js');
+    vs_code.cargarURL('https://idx.dev/');
     vs_code.cambiarDimensionInicial('70%','80%');
 
     youtube.cambiarDimensionDelLienzo(720,(720 * 9)/16);
