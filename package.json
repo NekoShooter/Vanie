@@ -1,6 +1,6 @@
 {
   "name": "vanie",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Es un gestor de ventanas para el navegador que emula el comportamiento de las ventanas de un sistema operativo de toda la vida",
   "files": [
     "README.md",
