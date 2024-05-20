@@ -1224,6 +1224,12 @@ get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
     get ico(){return this.#v?.ico;}
 
 /**
+ * Retornará la referencia del objeto `CompiladorCssVanie` perteneciente al objeto **Vanie** si se asignó un estilo, de lo contrario retornara `undefined`.
+ * @returns {CompiladorCssVanie|undefined}
+ */
+    get compiladorCss(){ return this.#css;}
+
+/**
  * Retornará la referencia `div` perteneciente a la ventana del objeto **Vanie** si se encuentra construido, si no lo está, retornará `undefined`.
  * @returns {HTMLElement|undefined}
  */
