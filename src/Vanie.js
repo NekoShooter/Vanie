@@ -309,8 +309,7 @@ export default class Vanie {
  * @param {number} y Posición en y: `number` | `'top'` | `'end'` | `'bottom'` | `'start'` | `'center'`.
  */
     cambiarPuntoDeRetorno(x,y){
-        this.#posicion.retorno.bNuevo(typeof x == 'string'? this.#xStr(x):x,typeof y == 'string'? this.#yStr(y):y);
-        if(this.estaMinimizado) this.posicion = this.#posicion.retorno;}
+        this.#posicion.retorno.bNuevo(typeof x == 'string'? this.#xStr(x):x,typeof y == 'string'? this.#yStr(y):y);}
 /**
  * Retorna la referencia del objeto `Punto` con la posición de retorno de la acción `minimizar` del objeto **Vanie**.
  * @returns {Punto}
