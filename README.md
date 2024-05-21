@@ -137,14 +137,17 @@ const ventana2 = new Vanie('linux-oscuro');
 const ventana3 = new Vanie('windows-claro');
 ventana1.padre = ventana2.padre = ventana3.padre = raiz;
 
-ventana1.cabecera = '<h2> ventana1 <h2>'; // Cambiando el contenido de la cabecera usando innerHtml.
+// Cambiando el contenido de la cabecera usando innerHtml.
+ventana1.cabecera = '<h2> ventana1 <h2>'; 
 
 const boton = document.createElement('button');
 boton.innerText = 'accion';
 boton.style.width = '100px';
 boton.style.height = '70%';
 boton.style.backgroundColor = '#dd4814';
-ventana2.cabecera = boton; // Cambiando el contenido de la cabercera con un objeto HTMLElement.
+
+// Cambiando el contenido de la cabercera con un objeto HTMLElement.
+ventana2.cabecera = boton;
 
 const listaDeDiv = ()=>{
     const list = [];
@@ -537,7 +540,7 @@ ventana3.abrir();
 pero al cerrar la ventana, el elemento no conservará las configuraciones previas.*/
 ventana3.lienzo.innerHTML = iframe; 
 
-// Reabrimos las ventanas al hacer doble clic
+// Reabrimos las ventanas al hacer doble click
 document.addEventListener('dblclick',()=>{
     ventana1.abrir();
     ventana2.abrir();
@@ -752,7 +755,7 @@ ventana3.lienzo.style.backgroundColor = '#00000077';
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWs3ZmRjeDJsZ3Z3NGxycW9ldzRmMnRpeXVzaHV3cTZqd3UwY3NwcSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EeWuJJCY1hbhn5OcY4/source.gif" alt="gif animado que muestra el resultado del codigo usado en el ejemplo de CambiarPuntoDeRetorno"></a></p>
 
 #### desplazar y desplazo:
-La función `desplazar` modifica el desplazamiento de la ventana en los ejes x e y. Mientras que la propiedad `desplazo` retorna un objeto `Desplazo` con los valores de desplazamiento.
+La función `desplazar` modifica el desplazamiento de la ventana en los ejes **x** e **y**. Mientras que la propiedad `desplazo` retorna un objeto `Desplazo` con los valores de desplazamiento.
 
 ``` JavaScript
 import Vanie from 'vanie';
@@ -784,7 +787,7 @@ console.log(ventana1.desplazo);
 </br>
 
 ### Dimensión
-Son un conjunto de propiedades y funciones que lo ayudaran a gestionar de una forma facil la dimensión de las ventanas creadas por **Vanie**.
+Son un conjunto de propiedades y funciones que lo ayudaran a gestionar de una forma facil la dimensión de las ventanas creadas con **Vanie**.
 
 #### dimension:
 **get** - **dimension** : Retorna un objeto `Dimension` que contiene la dimensión actual del objeto **Vanie**.  
@@ -820,7 +823,7 @@ ventana1.lienzo.style.backgroundColor =
 ventana2.lienzo.style.backgroundColor = '#00000077';
 ```
 #### alto y ancho:
-retornan y modifican la altura y el ancho actuales de la ventana, respectivamente. Aceptan tanto `números` como `strings`, donde los strings pueden representar porcentajes.  
+Retornan y modifican la altura y el ancho actuales de la ventana, respectivamente. Aceptan tanto `números` como `strings`, donde los strings pueden representar porcentajes.  
 
 `alto`: retorna y modifica la altura actual de la ventana.  
 `ancho`: retorna y modifica el ancho actual de la ventana.
@@ -858,7 +861,7 @@ console.log(ventana1.dimensionPadre);
 #### cambiarDimensionInicial y dApertura:
 La función `cambiarDimensionInicial` y la propiedad `dApertura` permiten establecer las dimensiones con las que se abrirá inicialmente la ventana. Se pueden especificar tanto `números` como `porcentajes`.
 
-`dApertura` roporciona una alternativa para realizar esta tarea, aceptando un objeto `Dimension` o un objeto con las propiedades `{w, h}` para definir las dimensiones de apertura, ademas de retorna la un objeto `Dimension` con las dimension inicial.
+`dApertura` Proporciona una alternativa para realizar esta tarea, aceptando un objeto `Dimension` o un objeto con las propiedades `{w, h}` para definir las dimensiones de apertura, ademas de retorna la un objeto `Dimension` con las dimension inicial.
 
 ``` JavaScript
 import Vanie from 'vanie';
@@ -916,8 +919,8 @@ ventana1.cambiarDimensionMinima(200,200);
 // Utiliza un objeto {w, h} para definir la dimensión minima de la ventana 2.
 ventana2.dMinima = {w:200,h:200};  
 
-// Cambia la dimensión minima de la ventana 3 utilizando un objeto 
-ventana3.dMinima = new Dimension(200,200);Dimension.
+// Cambia la dimensión minima de la ventana 3 utilizando un objeto Dimension.
+ventana3.dMinima = new Dimension(200,200);
 
 ventana1.abrir();
 ventana2.abrir();
@@ -1032,7 +1035,7 @@ const r16_9 = {w:720,h:(720 * 9)/16};
 // Cambiando la dimensión del lienzo.
 ventana1.cambiarDimensionDelLienzo(r16_9.w, r16_9.h);
 
-// Cambiando la dimensión del lienzo y haciéndola inmutable..
+// Cambiando la dimensión del lienzo y haciéndola inmutable.
 ventana2.cambiarDimensionDelLienzo(r16_9.w, r16_9.h,true);
 
 // Vuelve inmutable el lienzo.
@@ -1974,9 +1977,10 @@ const boton = document.getElementById('btn');
 
 const linux_ventana = new Vanie('linux-oscuro');
 const windows_ventana = new Vanie('windows-claro');
-
-globalVanie.addEventListener('vista',ventana=>{// Para saber más, vaya a la sección globalVanie
-    contador.innerText = 'ventanas en pantalla: ' + ventana.visibles; // Informa sobre el número de ventanas mostradas en pantalla.
+// Para saber más, vaya a la sección globalVanie
+globalVanie.addEventListener('vista',ventana=>{
+    // Informa sobre el número de ventanas mostradas en pantalla.
+    contador.innerText = 'ventanas en pantalla: ' + ventana.visibles; 
 
     });
 
@@ -2328,7 +2332,7 @@ const raiz = document.getElementById('raiz');
 globalVanie.conectarseA(raiz);
 
 // Solo deberías cambiar el nombre de la clase global si interfiere con tu diseño.
-globalVenie.renmbrarIdGlobal('nuevo_id_global') 
+globalVenie.renombrarIdGlobal('nuevo_id_global') 
 globalVanie.establecerBase('linux-oscuro');
 
 const ventana1 = new Vanie;
