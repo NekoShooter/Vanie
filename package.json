@@ -1,7 +1,7 @@
 {
   "name": "vanie",
-  "version": "0.0.2",
-  "description": "Es un gestor de ventanas para el navegador que emula el comportamiento de las ventanas de un sistema operativo de toda la vida",
+  "version": "0.0.3",
+  "description": "Vanie es una librería diseñada para el desarrollo de interfaces de usuario interactivas en el front-end. Con un enfoque en la creación de ventanas arrastrables, Vanie ofrece una experiencia de usuario familiar, inspirada en los sistemas operativos más emblemáticos: Windows, macOS y Linux.",
   "files": [
     "README.md",
     "index.js",
