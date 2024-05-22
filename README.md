@@ -2679,6 +2679,35 @@ for(let i = 0; i < 4; i++)
 ```
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMTd5cXpva3pxaW1sa2xqdGRlYmkwNXA2cTgzY2VxcWQ3OXllOW8xbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/dEZBuwfCcAmzZS6pMl/source.gif"alt="gif animado que muestra el resultado del codigo de ejemplo de Evento colision"></a></p>
 
+</br>
+
+#### Evento pulsar: 
+
+El evento `pulsar` permite ejecutar una función cuando se ha generado una pulsación en una ventana.  
+
+La función recibe como argumento la ventana que disparó el evento.  
+> ⚠ Esta en fase beta. Puede tener complicaciones con sitios web cargados en el lienzo.
+
+``` JavaScript
+import { globalVanie , Vanie } from 'vanie';
+
+const raiz = document.getElementById('raiz');
+
+globalVanie.conectarseA(raiz).establecerBase('linux-oscuro');
+
+// Al momento de pulsar cualquier ventana, el evento es emitido.
+globalVanie.addEventListener('pulsar',ventana=>{
+    console.log(`se ha pulsado ${ventana.identificador}`);
+});
+
+globalVanie.addEventListener('registro',ventana=>{
+    ventana.abrir();
+    ventana.lienzo.style.backgroundColor = '#059b9add';
+});
+// generando una ventana nueva.
+const nuevaVentana = new Vanie;
+nuevaVentana.identificador = 'ventana--001';
+```
 ---
 </br>
 

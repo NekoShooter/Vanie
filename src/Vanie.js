@@ -143,6 +143,7 @@ export default class Vanie {
     set titulo(str){
         if(typeof str != 'string' || this.#cabecera.str || !this.#css) return;
         const TITULO = str.trim();
+        this.#cabecera.titulo.str = TITULO;
         if(!this.#cabecera.titulo.span && TITULO != ''){
             const span = document.createElement('span');
             span.style.overflow = 'hidden';
@@ -158,7 +159,6 @@ export default class Vanie {
             if(this.estaConstruido) this.#v.cabecera.removeChild(this.#cabecera.titulo.span);
             this.#cabecera.titulo.span = this.#cabecera.titulo.str =undefined;}
         else{
-        this.#cabecera.titulo.str = 
         this.#cabecera.titulo.span.innerText = TITULO;}
     }
 /**
@@ -1061,7 +1061,7 @@ get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
                 const _y = desplazo.dy + pul.origen.y;
                 const ym = _y + this.#v.ventana.offsetHeight;
                 this.#eventoColision(_x,_y,xm,ym,pul.limite);}}
-       
+
         this.#registro.fnUp = ()=>{
             if(orden){
                 this.#modificaMARCO();
@@ -1084,13 +1084,16 @@ get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
         this.#registro.fnUp = this.#registro.fnUp.bind(this);
         
         this.#v.barra.addEventListener('dblclick',(e)=>{
+            VanieAdmin.pulsar(this.#llave,this);
             const validos = this.#css.class('controles','cabecera','ico','barra');
             for(const clase of e.target.classList){
                 if(validos.includes(clase)){
                     this.maximizar();
                     return;}}});
+
         
         this.#v.ventana.addEventListener('click',(e)=>{
+            VanieAdmin.pulsar(this.#llave,this);
             if(this.#v.minimizar === e.target) this.minimizar();
             else if(this.#v.cerrar === e.target) this.cerrar();
             else{
@@ -1098,6 +1101,7 @@ get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
                 if(this.#v.maximizar === e.target)this.maximizar();}});
 
         this.#v.ventana.addEventListener('mousedown',(e)=>{
+            //VanieAdmin.pulsar(this.#llave,this);
             if(e.target === this.#v.barra || e.target === this.#v.cabecera || e.target === this.#v.divBotones){
                 this.#transformacion.mov = orden = 0x03;}
             else if (e.target !== this.#v.lienzo)
@@ -1110,6 +1114,7 @@ get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
 //#region orden
             if(orden){
                 f(e);
+                VanieAdmin.pulsar(this.#llave,this)
                 VanieAdmin.mousemove = this.#registro.fnMov;
                 VanieAdmin.mouseup = this.#registro.fnUp;}});}
 
@@ -1402,7 +1407,7 @@ get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
             iframe.setAttribute('frameborder', 0);
             iframe.setAttribute("allowfullscreen", "");
             iframe.style.width = iframe.style.height = '100%';
-            this.#lienzo.iframe = iframe;
+            this.#lienzo.iframe = iframe;            
             if(this.estaConstruido && !this.#errorLienzo())this.#v.lienzo.appendChild(this.#lienzo.iframe);}
         else this.#lienzo.iframe.setAttribute('src', url);}
 /**

@@ -9,7 +9,7 @@ class AdministradorVanie{
     #mousemove;
     #mouseup;
     #limites = undefined;
-    #eventos ={registro:[],vista:[],colision:[]};
+    #eventos ={registro:[],vista:[],colision:[],pulsar:[]};
 
     constructor(){
         document.addEventListener('mousemove',e=>this.#mousemove?.(e));
@@ -57,6 +57,11 @@ class AdministradorVanie{
         this.nodos.set(llave,vanie);
         this.subirPosicion(llave);
         return llave;}
+
+    pulsar(llave,vanie){
+        if(!llave) return;
+        this.#iter('pulsar',vanie);
+    }
 
     activarRegistro(llave,vanie){
         if(!llave) return;
@@ -321,6 +326,7 @@ class GestorVanie{
  * + `'registro'` : Detecta cada vez que se crea una nueva instancia del objeto **Vanie**.
  * + `'vista'` : Detecta todos los eventos que ocultan o muestran las ventanas en pantalla
  * + `'colision'` : Detecta la colisión de las ventanas con los límites impuestos en la variable _globalVenie.limites_ y emite una señal en el caso de que se haya cruzado y/o abandonado el límite.
+ * + `'pulsar'` : Detecta cuando una ventana ha sido pulsada.
  * @param {function(Vanie|{vanie:Vanie visibles:number seMostro:boolean seOculto:boolean}|{der:boolean izq:boolean sup:boolean inf:boolean}):void} funcion La función a ejecutarse puede aceptar un argumento.
  * @example
  * globalVanie.addEventListener('registro', vanie=>{ 
@@ -338,6 +344,10 @@ class GestorVanie{
  *      colision.izq; // boolean: true si excedió el límite izquierdo, false si salió del límite.
  *      colision.sup; // boolean: true si excedió el límite superior, false si salió del límite.
  *      colision.inf; // boolean: true si excedió el límite inferior, false si salió del límite.
+ *  });
+ * 
+ * globalVanie.addEventListener('pulsar', ventana=>{
+ *      console.log('ventana' + ventana.identificador + 'ha sido seleccionada');
  *  });
  */
     addEventListener(evento,funcion){if(typeof evento == 'string' && typeof funcion == 'function') VanieAdmin.eventos(evento,funcion);}
