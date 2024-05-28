@@ -166,7 +166,7 @@ function main(){
     btn_firefox.addEventListener('click',firefox.abrir);
     btn_vsCode.addEventListener('click',vs_code.abrir);
     btn_youtube.addEventListener('click',youtube.abrir);
-    //window.addEventListener('resize',cambiarPuntoDeRetorno);
+    window.addEventListener('resize',cambiarPuntoDeRetorno);
 }
 
 
