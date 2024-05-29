@@ -722,10 +722,13 @@ export default class Vanie {
     cerrar(){
         if(!this.estaAbierto) return;
         if(this.esVisible && this.#llave) VanieAdmin.oculta(this);
-        this.#estado.cerrar = true;
+
         if(!this.esVisible){
+            this.#estado.cerrar = true;
             this.#cerrarVentana();
             return;}
+
+        this.#estado.cerrar = true;
         this.#animacionActiva.cerrar = true;
         this.#v.ventana.classList.add(...this.#css.class('animacion','transparente','bloqueado'));
         this.#v.ventana.style.transform = escala(.95,.95).str;}
