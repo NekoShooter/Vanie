@@ -1,6 +1,6 @@
 {
   "name": "vanie",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Vanie es una librería diseñada para el desarrollo de interfaces de usuario interactivas en el front-end. Con un enfoque en la creación de ventanas arrastrables, Vanie ofrece una experiencia de usuario familiar, inspirada en los sistemas operativos más emblemáticos: Windows, macOS y Linux.",
   "files": [
     "README.md",
@@ -15,13 +15,23 @@
   },
   "keywords": [
     "draggable",
+    "drag",
     "window",
     "modals",
     "resizable",
     "UI",
+    "js",
     "ventana",
     "re-escalable",
-    "frontend"
+    "frontend",
+    "widget",
+    "panel",
+    "vanilla",
+    "component",
+    "MacOS",
+    "Linux",
+    "Windows",
+    "front end"
   ],
   "author": "Neko Shooter",
   "repository": {
