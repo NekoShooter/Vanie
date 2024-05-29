@@ -8,8 +8,9 @@ class AdministradorVanie{
     #registros = 0;
     #mousemove;
     #mouseup;
+    ventanaArrastrada;
     #limites = undefined;
-    #eventos ={registro:[],vista:[],colision:[],pulsar:[]};
+    #eventos ={registro:[],vista:[],colision:[],pulsar:[],arrastre:[]};
 
     constructor(){
         document.addEventListener('mousemove',e=>this.#mousemove?.(e));
@@ -29,6 +30,12 @@ class AdministradorVanie{
     visible(ventana){++this.#ventanas_visibles;this.#iter('vista',{vanie:ventana,visibles:this.#ventanas_visibles,seOculto:false,seMostro:true});}
     validarColision(der=false,izq=false,sup=false,inf=false){
         this.#iter('colision',{der:der,izq:izq,sup:sup,inf:inf});}
+    arrastre(condicion,ventana,p,pg,d){
+        if(!condicion){
+            this.ventanaArrastrada = undefined;
+            return;}
+        this.ventanaArrastrada = ventana;
+        this.#iter('arrastre',{vanie:ventana,local:p,global:pg,desplazo:d});}
 
     estaEnElLimite(){return !!this.trueColision.size;}
     registrarColision(llave,obj){this.trueColision.set(llave,obj); }
@@ -218,6 +225,16 @@ class GestorVanie{
  */
     get hayEstilos(){return this.#Epredefinidos.length && this.#Epersonalizados.length && this.#sistemaBase;}
 /**
+ * Retorna `true` si existe alguna ventana siendo arrastrada por la pantalla o `false` si no es así.
+ * @returns {boolean}
+ */
+    get hayArrastre(){return !!VanieAdmin.ventanaArrastrada;}
+/**
+ * Retorna el objeto `Vanie` de la ventana que esta siendo arrastrada por la pantalla o `undefined` si no es así.
+ * @returns {Vanie|undefined}
+ */
+    get ventanaArrastrada(){return VanieAdmin.ventanaArrastrada;}
+/**
  * Retorna el numero de instancias Vanie registradas.
  * @returns {number}
  */
@@ -327,6 +344,7 @@ class GestorVanie{
  * + `'vista'` : Detecta todos los eventos que ocultan o muestran las ventanas en pantalla
  * + `'colision'` : Detecta la colisión de las ventanas con los límites impuestos en la variable _globalVenie.limites_ y emite una señal en el caso de que se haya cruzado y/o abandonado el límite.
  * + `'pulsar'` : Detecta cuando una ventana ha sido pulsada.
+ * + `'arrastre'` : Detecta cuando una ventana esta siendo arrastrada.
  * @param {function(Vanie|{vanie:Vanie visibles:number seMostro:boolean seOculto:boolean}|{der:boolean izq:boolean sup:boolean inf:boolean}):void} funcion La función a ejecutarse puede aceptar un argumento.
  * @example
  * globalVanie.addEventListener('registro', vanie=>{ 
@@ -349,6 +367,12 @@ class GestorVanie{
  * globalVanie.addEventListener('pulsar', ventana=>{
  *      console.log('ventana' + ventana.identificador + 'ha sido seleccionada');
  *  });
+ * 
+ * globalVanie.addEventListener('arrastre',objeto=>{
+ *      objeto.vanie; // Vanie: ventana que lanzo el evento.
+ *      objeto.local; // Punto: coordenada local del mouse.
+ *      objeto.global; // Punto: coordenada global del mouse.
+ *      objeto.desplazo; // Desplazo: desplazamiento de la ventana.});
  */
     addEventListener(evento,funcion){if(typeof evento == 'string' && typeof funcion == 'function') VanieAdmin.eventos(evento,funcion);}
 /**

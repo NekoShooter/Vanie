@@ -5,7 +5,13 @@
 
 ## **Vanie**
 
-Vanie es una librería diseñada para el desarrollo de interfaces de usuario interactivas en el front-end. Con un enfoque en la creación de ventanas arrastrables, Vanie ofrece una experiencia de usuario familiar, inspirada en los sistemas operativos más emblemáticos: Windows, macOS y Linux.
+Vanie es una librería diseñada para el desarrollo de interfaces de usuario interactivas en el front-end. Con un enfoque en la creación de ventanas arrastrables, Vanie ofrece una experiencia de usuario familiar, inspirada en los sistemas operativos más emblemáticos: Windows, macOS y Linux.  
+
+</br>
+
+Versión | Novedades
+--- | ---  
+0.0.4 | <ul><li>Mejoras en la optimización en el evento cerrar</li><li>Propiedades nuevas como: [hayArrastre](#parametros) y [ventanaArrastrada](#parametros)</li><li>Nuevo [Evento arrastre](#evento-arrastre)</li></ul>
 
 ##### instalacion:
 ``` bash
@@ -599,6 +605,8 @@ pos.bNuevo('end','start');
 ventana1.posicion = pos;
 ventana1.posicion = {x:'center',y:'bottom'}
 ```
+> Si quiere saber más sobre el objeto `Punto`, revise la documentación de [nauty](https://www.npmjs.com/package/nauty).
+
 #### coordenadas x, y:
 
 Estas propiedades permiten tanto modificar como obtener las coordenadas **x** e **y** de la ventana.
@@ -683,7 +691,7 @@ La función `cambiarPuntoDeApertura` y la propiedad `pApertura` permiten definir
 `pApertura` ofrece una forma alternativa de realizar esta tarea, aceptando un objeto `Punto` o un objeto con las propiedades `{x, y}` para definir la posición de apertura.
 ``` JavaScript
 import Vanie from 'vanie';
-import { Punto } from "nauty";
+import { Punto } from "nauty"; // npm i nauty
 
 const raiz = document.getElementById('raiz');
 
@@ -711,6 +719,8 @@ ventana1.lienzo.style.backgroundColor =
 ventana2.lienzo.style.backgroundColor =
 ventana3.lienzo.style.backgroundColor = '#00000077';
 ```
+> Si quiere saber más sobre el objeto `Punto`, revise la documentación de [nauty](https://www.npmjs.com/package/nauty).
+
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOWJ0cWF3YTIyZmY3eDhpbXk3MG1jY25wdmVheW44a2ZkYm1oNGFyZiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/L06TMJBTfVMT6tN1py/source.gif" alt="gif animado que muestra el resultado del codigo usado en el ejemplo de CambiarPuntoDeApertura"></a></p>
 
 #### cambiarPuntoDeRetorno y pRetorno:
@@ -722,7 +732,7 @@ La función `cambiarPuntoDeRetorno` y la propiedad `pRetorno` permiten definir l
 
 ``` JavaScript
 import Vanie from 'vanie';
-import { Punto } from "nauty";
+import { Punto } from "nauty"; //npm i nauty
 
 const raiz = document.getElementById('raiz');
 
@@ -752,6 +762,8 @@ ventana1.lienzo.style.backgroundColor =
 ventana2.lienzo.style.backgroundColor =
 ventana3.lienzo.style.backgroundColor = '#00000077';
 ```
+> Si quiere saber más sobre el objeto `Punto`, revise la documentación de [nauty](https://www.npmjs.com/package/nauty).
+
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYWs3ZmRjeDJsZ3Z3NGxycW9ldzRmMnRpeXVzaHV3cTZqd3UwY3NwcSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/EeWuJJCY1hbhn5OcY4/source.gif" alt="gif animado que muestra el resultado del codigo usado en el ejemplo de CambiarPuntoDeRetorno"></a></p>
 
 #### desplazar y desplazo:
@@ -798,7 +810,7 @@ Son un conjunto de propiedades y funciones que lo ayudaran a gestionar de una fo
 
 ``` JavaScript
 import Vanie from 'vanie';
-import {Dimension} from 'nauty';
+import {Dimension} from 'nauty';//npm i nauty
 
 const raiz = document.getElementById('raiz');
 
@@ -822,6 +834,8 @@ ventana2.dimension = dimension;
 ventana1.lienzo.style.backgroundColor =
 ventana2.lienzo.style.backgroundColor = '#00000077';
 ```
+> Si quiere saber más sobre el objeto `Dimension`, revise la documentación de [nauty](https://www.npmjs.com/package/nauty).
+
 #### alto y ancho:
 Retornan y modifican la altura y el ancho actuales de la ventana, respectivamente. Aceptan tanto `números` como `strings`, donde los strings pueden representar porcentajes.  
 
@@ -903,7 +917,7 @@ La función `cambiarDimensionMinima` y la propiedad `dMinima` permiten establece
 
 ``` JavaScript
 import Vanie from 'vanie';
-import { Dimension } from "nauty";
+import { Dimension } from "nauty";//npm i nauty
 
 const raiz = document.getElementById('raiz');
 
@@ -930,6 +944,8 @@ ventana1.lienzo.style.backgroundColor =
 ventana2.lienzo.style.backgroundColor =
 ventana3.lienzo.style.backgroundColor = '#00000077';
 ```
+> Si quiere saber más sobre el objeto `Dimension`, revise la documentación de [nauty](https://www.npmjs.com/package/nauty).
+
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNms1bWYxenZnenRvamIwaGQ1M2p4OXAweGgzNXVob2M5MzF2bzlvZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/po45vKoGM9y762Vk3t/source.gif" alt="gif animado que muestra el resultado del codigo usado en el ejemplo de cambiarDimensionMinima"></a></p>
 
 #### cambiarDimensionFija y dFija:
@@ -940,7 +956,7 @@ La función `cambiarDimensionFija` y la propiedad `dFija` permiten establecer un
 
 ``` JavaScript
 import Vanie from 'vanie';
-import { Dimension } from "nauty";
+import { Dimension } from "nauty";//npm i nauty
 
 const raiz = document.getElementById('raiz');
 
@@ -967,6 +983,8 @@ ventana1.lienzo.style.backgroundColor =
 ventana2.lienzo.style.backgroundColor =
 ventana3.lienzo.style.backgroundColor = '#00000077';
 ```
+> Si quiere saber más sobre el objeto `Dimension`, revise la documentación de [nauty](https://www.npmjs.com/package/nauty).
+
 <p align="center"><a href="#"><img src="https://i.ibb.co/5nnnVGk/fija.jpg" alt="imagen que muestra el resultado del codigo usado en el ejemplo de cambiarDimensionFija"></a></p>
 
 #### eliminarDimensionFija:
@@ -1969,7 +1987,7 @@ Si bien no es posible proveer el tipo de complicaciones que tendrá su diseño p
 
 ``` JavaScript
 import { globalVanie , Vanie } from 'vanie';
-import { Dimension } from "nauty";
+import { Dimension } from "nauty";//npm i nauty
 
 const raiz = document.getElementById('raiz');
 const contador = document.getElementById('contador');
@@ -2005,6 +2023,8 @@ linux_ventana.addEventListener('cerrar',windows_ventana.cerrar);
 linux_ventana.abrir();
 boton.addEventListener('click', linux_ventana.abrir);
 ```
+> Si quiere saber más sobre el objeto `Dimension`, revise la documentación de [nauty](https://www.npmjs.com/package/nauty).
+
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExODFocTl3YXhrNWU2OGJ5aGN2cjI2Y25tMWdkYXI0d2c4Mmd4NGcxMSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/KS5xjggpOh9gsq6zbZ/source.gif"alt="gif animado que muestra el resultado del codigo de una ventana dentro de otra"></a></p>
 
 Como se habrá percatado, existe un error, ya que al cerrar linux_ventana y al volverla abrir, windows_ventana no se abre hasta cerrar y abrir linux_ventana nuevamente.  
@@ -2089,7 +2109,7 @@ ventana.eliminar(); // elimina el contenido interno de la ventana.
 La función `subir` permite que una ventana se posicione por encima de otras ventanas en pantalla.
 ``` JavaScript
 import Vanie from 'vanie';
-import { Dimension } from "nauty";
+import { Dimension } from "nauty";//npm i nauty
 
 const raiz = document.getElementById('raiz');
 const boton = document.getElementById('btn');
@@ -2121,6 +2141,8 @@ ventana4.lienzo.style.backgroundColor = `#9ae07ddd`;
 // Posiciona la ventana 1 por encima de las demás ventanas.
 boton.addEventListener('click', ventana1.subir); 
 ```
+> Si quiere saber más sobre el objeto `Dimension`, revise la documentación de [nauty](https://www.npmjs.com/package/nauty).
+
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaDJzdXNuOW90MWh6ZzVvM3JncWtwZzdia3U0ZXJrdzlwaWlqNmQ1bCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/fSO5lp3LavdawK1QIT/source.gif"alt="gif animado que muestra el resultado de la solucion del ejemplo desconectarseDelGestor"></a></p>
 
 </br>
@@ -2411,7 +2433,11 @@ globalVanie.ventanasForEach(ventana=>{
 
 + **`registros`** : Retorna el número de registros de instancias que se han hecho.
 
-+ **`limites`** :  Retorna y modifica los [límites](#limites) que determinarán las colisiones de las ventanas en pantalla (ver [evento colision](#Evento-colision)).
++ **`limites`** : Retorna y modifica los [límites](#limites) que determinarán las colisiones de las ventanas en pantalla (ver [evento colision](#Evento-colision)).
+
++ **`hayArrastre`** : Retorna **true** si existe alguna ventana siendo arrastrada por la pantalla o **false** si no es así.
+
++ **`ventanaArrastrada`** : Retorna el objeto **Vanie** de la ventana que está siendo arrastrada por la pantalla o **undefined** si no es así.
 
 </br>
 
@@ -2708,6 +2734,59 @@ globalVanie.addEventListener('registro',ventana=>{
 const nuevaVentana = new Vanie;
 nuevaVentana.identificador = 'ventana--001';
 ```
+---
+</br>
+
+#### Evento arrastre: 
+
+El evento `arrastre` permite ejecutar una función cuando una ventana se está arrastrando por la pantalla. Este evento proporciona información útil sobre la ventana y la posición del puntero del mouse.  
+
+La función recibe como argumento un objeto con las siguientes propiedades:  
++ `vanie` : La instancia de la ventana que disparó el evento.
++ `local` : Un objeto **Punto** con las coordenadas locales del puntero del mouse.
++ `global` : Un objeto **Punto** con las coordenadas globales del puntero del mouse.
++ `desplazo` : Un objeto **Desplazo** que contiene el desplazamiento **dx** y **dy** de la ventana con respecto a sus coordenadas iniciales.  
+
+> Detalles Técnicos: Para obtener la posición actual de la ventana, se debe sumar la [posición inicial](#posicion) de la ventana con el desplazamiento `desplazo`. Esto es necesario porque las ventanas utilizan transformaciones `translate` durante el arrastre. Una vez finalizado el arrastre, estas transformaciones se aplican a las nuevas coordenadas.
+
+``` JavaScript
+import { globalVanie , Vanie } from 'vanie';
+
+const raiz = document.getElementById('raiz');
+
+globalVanie.conectarseA(raiz).establecerBase('linux-oscuro');
+
+globalVanie.addEventListener('registro',ventana=>{
+    ventana.abrir();
+    ventana.lienzo.style.backgroundColor = '#059b9add';
+});
+
+// Al momento de arrastrar cualquier ventana, el evento es emitido.
+globalVanie.addEventListener('arrastre',objeto=>{
+    // Vanie: ventana que lanzo el evento.
+    const ventana = objeto.vanie;
+    console.log(`la ventana ${ventana.identificador} se esta arrastrando`);
+    
+    // Punto: coordenada local del mouse.
+    const pLocal = objeto.local;
+    console.log(`la coordenada local en x es ${pLocal.x} e y es ${pLocal.y}`);
+
+    // Punto: coordenada global del mouse.
+    const pGlobal = objeto.global;
+    console.log(`la coordenada local en x es ${pGlobal.x} e y es ${pGlobal.y}`);
+
+    // Desplazo: desplazamiento de la ventana.
+    const desplazo = objeto.desplazo;
+    console.log(`la ventana se desplazo en x:${desplazo.dx} , y:${desplazo.dy}`); 
+});
+
+// generando una ventana nueva.
+const nuevaVentana = new Vanie;
+nuevaVentana.identificador = 'ventana--001';
+```
+
+> Si quiere saber más sobre los objetos `Punto` y `Desplazo`, revise la documentación de [nauty](https://www.npmjs.com/package/nauty).
+
 ---
 </br>
 

@@ -708,9 +708,7 @@ export default class Vanie {
                 this.#posY(0);
                 data.origen = this.posicion;}
             else{
-                //this.#verificarColision(this.x,this.y,this.ancho,this.alto);
                 this.#verificarColision(p.x,p.y,d.w + p.x,d.h+p.y);
-                //this.#desaparecerColision(true);
             }
 
             if(!this.#estado.mediaPos && !this.#estado.max){
@@ -723,11 +721,23 @@ export default class Vanie {
  */
     cerrar(){
         if(!this.estaAbierto) return;
-        if(!this.estaMinimizado && this.#llave && this.#opciones.eliminar_alcerrar) VanieAdmin.oculta(this);
-        this.#animacionActiva.cerrar = true;
+        if(this.esVisible && this.#llave) VanieAdmin.oculta(this);
         this.#estado.cerrar = true;
-        this.#v.ventana.classList.add(...this.#css.class('animacion','transparente'));
+        if(!this.esVisible){
+            this.#cerrarVentana();
+            return;}
+        this.#animacionActiva.cerrar = true;
+        this.#v.ventana.classList.add(...this.#css.class('animacion','transparente','bloqueado'));
         this.#v.ventana.style.transform = escala(.95,.95).str;}
+
+    #cerrarVentana(){
+        this.#desaparecerColision(true);
+        if(this.#opciones.eliminar_alcerrar){this.eliminar();}
+        else{
+            if(this.estaMinimizado){this.#estado.min = false;}
+            this.#v.ventana.classList.add(this.#css.class('none'));
+            this.#v.ventana.classList.remove(...this.#css.class('transparente','bloqueado'));}
+        this.#ejecutarFunciones('cerrar',this.#estado.cerrar);}
 
 // #region media
 /**
@@ -798,7 +808,7 @@ export default class Vanie {
                 VanieAdmin.subirPosicion(this.#llave);}
             if(this.#padre && this.#animar_apertura){
                 setTimeout(()=>{
-                    this.#v.ventana.classList.remove(this.#css.class('transparente'));
+                    this.#v.ventana.classList.remove(...this.#css.class('transparente','bloqueado'));
                     this.#v.ventana.style.transform = 'scale(1,1)';
                 },100);}
             this.#transitionend();
@@ -829,16 +839,9 @@ export default class Vanie {
                     this.#v.ventana.style.transform = '';
                     if(this.#animacionActiva.cerrar){
                         this.#animacionActiva.cerrar=false;
-                        this.#desaparecerColision(true);
-                        if(this.#opciones.eliminar_alcerrar){
-                            this.eliminar();}
-                        else{
-                            if(this.estaMinimizado){this.#estado.min = false;}
-                            this.#v.ventana.classList.add(this.#css.class('none'));
-                            this.#v.ventana.classList.remove(this.#css.class('transparente'));}
-                        this.#ejecutarFunciones('cerrar',this.#estado.cerrar);}
+                        this.#cerrarVentana();}
                     else this.#animacionActiva.abrir=false;}});}
-
+    
 //#region reconstruir
     #reConstruir(){
         if(!this.#css) throw('no se ha asignado ningun estilo');
@@ -1024,11 +1027,16 @@ get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
             this.bloquearIframe(true);}
 
         const desplazo = new Desplazo;
+        const pLocal = new Punto;
+        const pGlobal = new Punto;
+
         let orden = 0;
         this.#registro.fnMov = (e)=>{
             if(!orden) return;
             let y = 0x01 & orden ? pul.y - e.clientY : e.clientY - pul.y;
             let x = 0x02 & orden ? pul.x - e.clientX : e.clientX - pul.x;
+            pLocal.bNuevo(e.clientX,e.clientY);
+            pGlobal.bNuevo(e.pageX,e.pageY);
 
             if(!(0x0c & orden)){
                 if(this.#estado.max) this.#expandir('max',e,pul);
@@ -1052,6 +1060,7 @@ get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
             if(0x01 & orden && pul.valido.y) desplazo.dy = -y;
             if(0x02 & orden && pul.valido.x) desplazo.dx = -x;
             if(0x03 & orden){this.#v.ventana.style.transform = `translate(${desplazo.dx}px,${desplazo.dy}px)`;}
+            VanieAdmin.arrastre(((orden <= 3) && (pul.valido.x||pul.valido.y)),this,pLocal,pGlobal,desplazo);
             if(0x04 & orden && pul.valido.y) this.#v.ventana.style.height=`${pul.dimension.h+y}px`;
             if(0x08 & orden && pul.valido.x) this.#v.ventana.style.width=`${pul.dimension.w+x}px`;
         
@@ -1064,6 +1073,7 @@ get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
 
         this.#registro.fnUp = ()=>{
             if(orden){
+                VanieAdmin.ventanaArrastrada = undefined;
                 this.#modificaMARCO();
                 this.bloquearIframe(false);
                 if(desplazo.dx) this.#posX(desplazo.dx + pul.origen.x);
