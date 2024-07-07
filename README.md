@@ -11,7 +11,7 @@ Vanie es una librería diseñada para el desarrollo de interfaces de usuario int
 
 Versión | Novedades
 --- | ---  
-0.0.4 | <ul><li>Mejoras en la optimización en el evento cerrar</li><li>Propiedades nuevas como: [hayArrastre](#parametros) y [ventanaArrastrada](#parametros)</li><li>Nuevo [Evento arrastre](#evento-arrastre)</li></ul>
+0.0.4 ~ 0.0.5 | <ul><li>Nuevo Metodo [limitar movimiento](#limitarmovimiento)</li></ul>
 
 ##### instalacion:
 ``` bash
@@ -794,6 +794,36 @@ console.log(ventana1.desplazo);
 <p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2U5bWI2NTNxbnk5MWcybTRxc2dwcDcwanFiaXQyaGQ1NnB0d2tsNSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/GYz05NAdwGv7oUTkLN/source.gif" alt="gif animado que muestra el resultado del codigo usado en el ejemplo de desplazar"></a></p>
 
 > ⚠ Tener en cuenta que el desplazamiento afecta a otras transformaciones, por lo que si desea que el desplazamiento se convierta en las coordenadas finales de la ventana, necesita hacer los cálculos necesarios y asignarlo a la [posicion](#posicion) de la ventana.
+
+#### limitarMovimiento:
+
+El método `limitarMovimiento` permite **activar** o **desactivar** el movimiento de una ventana. Esto es útil para evitar que una ventana se pueda arrastrar cuando no se desea esta funcionalidad.
+
+Acepta un valor booleano que determina si se debe activar o desactivar el movimiento de la ventana.
++ `true`: Desactiva el movimiento de la ventana.
++ `false`: Activa el movimiento de la ventana.
+
+``` JavaScript
+import Vanie from 'vanie';
+
+const raiz = document.getElementById('raiz');
+
+const ventana_noMove = new Vanie('windows-claro');
+const ventana = new Vanie('linux-oscuro');
+
+ventana_noMove.padre = ventana.padre = raiz;
+
+//desactiva el movimiento de la ventana.
+ventana_noMove.limitarMovimiento(true);
+
+ventana_noMove.abrir();
+ventana.abrir();
+
+ventana_noMove.lienzo.style.backgroundColor = '#00000077';
+ventana.lienzo.style.backgroundColor = '#059b9add';
+```
+
+<p align="center"><a href="#"><img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWZ2bmp5eHVxeXFtNW12dDgxbGU3bGZ6a21qZHZnaTZteWJjb3JseiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/qSm75pkks62xEP2Iib/giphy.gif" alt="gif animado que muestra el resultado del codigo usado en el ejemplo de limitarMovimiento"></a></p>
 
 ---
 </br>

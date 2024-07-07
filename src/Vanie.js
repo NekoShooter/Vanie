@@ -17,6 +17,7 @@ export default class Vanie {
     #estado = {min:false,max:false,cerrar:true,media:false,mediaPos:undefined};
     #llave; #marco; #cache; #css; #v; #r; #animar_apertura = true; #estilo_pre; #identificador;
     #map = {archivado:false,data:0,tmp:0};#transformacion = {mov:0,dim:0}
+    #mover = true;
 
 /**
  * @constructor _`Opcional`_ encaso de usar **globalVanie** para asignar el estilo  
@@ -1116,7 +1117,8 @@ get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
         this.#v.ventana.addEventListener('mousedown',(e)=>{
             //VanieAdmin.pulsar(this.#llave,this);
             if(e.target === this.#v.barra || e.target === this.#v.cabecera || e.target === this.#v.divBotones){
-                this.#transformacion.mov = orden = 0x03;}
+                this.subir();
+                this.#transformacion.mov = orden = this.#mover?0x03:0;}
             else if (e.target !== this.#v.lienzo)
                 for(const obj in this.#r){
                     if(this.#r[obj].div === e.target){
@@ -1291,6 +1293,11 @@ get estilo(){return this.#css?.CONFIGURACION.data.nombre??'';}
  * @param {boolean} condicion 
  */
     eliminarAlCerrar(condicion){this.#opciones.eliminar_alcerrar = condicion;}
+/**
+ * Permite activar/desactivar el movimiento de la ventana.
+ * @param {boolean} noMover `true`: desactiva el movimiento de la ventana, `false` : activa el movimiento de la ventana.
+ */
+    limitarMovimiento(noMover = false){this.#mover = !(!!noMover);}
 /**
  * Desconecta el objeto **Vanie** del gestor global
  */
